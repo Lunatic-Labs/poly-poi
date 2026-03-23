@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Low-key Landmarks — Team Capabilities</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #111109;
+  --surface:      #191910;
+  --card:         #201f14;
+  --border:       #33321e;
+  --border-hi:    #4a4830;
+  --text:         #ede5cc;
+  --muted:        #7a7660;
+  --faint:        #3a3828;
+
+  --amber:        #e8a520;
+  --amber-bg:     rgba(232,165,32,.10);
+  --amber-border: rgba(232,165,32,.22);
+
+  --sage:         #6db06a;
+  --sage-bg:      rgba(109,176,106,.10);
+  --sage-border:  rgba(109,176,106,.22);
+
+  --rust:         #c04e28;
+  --rust-bg:      rgba(192,78,40,.10);
+  --rust-light:   #d8704a;
+  --rust-border:  rgba(192,78,40,.22);
+
+  --slate:        #7a8fa8;
+  --slate-bg:     rgba(122,143,168,.08);
+  --slate-border: rgba(122,143,168,.22);
+
+  --ff-disp: 'Bebas Neue', sans-serif;
+  --ff-mono: 'IBM Plex Mono', monospace;
+  --ff-body: 'Lora', serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--ff-body);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* grain overlay */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: .028;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── LAYOUT ── */
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 2rem; }
+
+section { padding: 5rem 0; border-top: 1px solid var(--border); }
+
+.sec-label {
+  font-family: var(--ff-mono);
+  font-size: .6rem;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: .9rem;
+}
+.sec-title {
+  font-family: var(--ff-disp);
+  font-size: clamp(2.4rem,4.5vw,3.8rem);
+  letter-spacing: .06em;
+  line-height: 1;
+  margin-bottom: 2.8rem;
+}
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-top: none;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+}
+
+.topo {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  opacity: .07;
+}
+.topo svg { width: 100%; height: 100%; }
+
+.hero-meta {
+  position: absolute; top: 2rem; left: 2rem;
+  font-family: var(--ff-mono);
+  font-size: .58rem;
+  letter-spacing: .22em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.hero-body {
+  position: relative; z-index: 1;
+  padding: 0 2rem 5rem;
+  max-width: 1120px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hero-eyebrow {
+  font-family: var(--ff-mono);
+  font-size: .65rem;
+  letter-spacing: .28em;
+  color: var(--amber);
+  text-transform: uppercase;
+  margin-bottom: 1.2rem;
+  opacity: 0;
+  animation: fadeUp .7s ease forwards .15s;
+}
+
+.hero-title {
+  font-family: var(--ff-disp);
+  font-size: clamp(5.5rem, 13vw, 13rem);
+  line-height: .88;
+  letter-spacing: .02em;
+  margin-bottom: 3rem;
+  opacity: 0;
+  animation: fadeUp .7s ease forwards .35s;
+}
+.hero-title .accent { color: var(--amber); display: block; }
+
+.hero-members {
+  display: flex; gap: 2rem; flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp .7s ease forwards .6s;
+}
+.h-member {
+  display: flex; align-items: center; gap: .7rem;
+}
+.h-badge {
+  width: 2rem; height: 2rem; border-radius: 50%;
+  border: 1px solid var(--amber-border);
+  background: var(--amber-bg);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-mono);
+  font-size: .55rem; color: var(--amber);
+  flex-shrink: 0;
+}
+.h-member span {
+  font-family: var(--ff-mono);
+  font-size: .7rem;
+  letter-spacing: .07em;
+  color: var(--muted);
+}
+
+.scroll-cue {
+  position: absolute; bottom: 2rem; right: 2.5rem;
+  font-family: var(--ff-mono); font-size: .55rem;
+  letter-spacing: .2em; color: var(--faint);
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  animation: blink 2.4s ease-in-out infinite 1.2s;
+}
+
+/* ── SWOT CARDS ── */
+.swot-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+.s-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  transition: border-color .25s;
+}
+.s-card:hover { border-color: var(--border-hi); }
+
+.s-card-head {
+  padding: 1.1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: .9rem;
+}
+.s-initials {
+  width: 2.4rem; height: 2.4rem; border-radius: 50%;
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-mono); font-size: .6rem; color: var(--amber);
+  flex-shrink: 0;
+}
+.s-name {
+  font-family: var(--ff-disp);
+  font-size: 1.35rem; letter-spacing: .07em; line-height: 1;
+}
+
+.s-quads {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.s-q {
+  padding: 1.1rem 1.4rem;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.s-q:nth-child(2), .s-q:nth-child(4) { border-right: none; }
+.s-q:nth-child(3), .s-q:nth-child(4) { border-bottom: none; }
+
+.q-lbl {
+  font-family: var(--ff-mono);
+  font-size: .52rem; letter-spacing: .22em;
+  text-transform: uppercase;
+  margin-bottom: .65rem;
+}
+.q-lbl.s { color: var(--amber); }
+.q-lbl.w { color: var(--rust-light); }
+.q-lbl.o { color: var(--sage); }
+.q-lbl.t { color: var(--slate); }
+
+.pills { display: flex; flex-wrap: wrap; gap: .28rem; }
+
+.pill {
+  font-family: var(--ff-mono);
+  font-size: .56rem;
+  padding: .18rem .48rem;
+  border-radius: 2px;
+  line-height: 1.5;
+}
+.pill.s { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+.pill.w { background: var(--rust-bg); color: var(--rust-light); border: 1px solid var(--rust-border); }
+.pill.o { background: var(--sage-bg); color: var(--sage); border: 1px solid var(--sage-border); }
+.pill.t { background: var(--slate-bg); color: var(--slate); border: 1px solid var(--slate-border); }
+
+/* ── MATRIX ── */
+.legend {
+  display: flex; gap: 1.4rem; flex-wrap: wrap;
+  margin-bottom: 1.8rem;
+  font-family: var(--ff-mono); font-size: .62rem;
+}
+.l-item { display: flex; align-items: center; gap: .45rem; color: var(--muted); }
+.l-pip {
+  width: 1.6rem; height: 1.2rem; border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .58rem; font-weight: 500;
+}
+.l-pip.s { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+.l-pip.w { background: var(--rust-bg); color: var(--rust-light); border: 1px solid var(--rust-border); }
+.l-pip.o { background: var(--sage-bg); color: var(--sage); border: 1px solid var(--sage-border); }
+.l-pip.wo {
+  background: linear-gradient(90deg, var(--rust-bg) 50%, var(--sage-bg) 50%);
+  color: var(--text); border: 1px solid var(--border-hi);
+  font-size: .5rem; width: 2rem;
+}
+
+.mx-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+
+.mx {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--ff-mono); font-size: .68rem;
+  min-width: 800px;
+}
+
+.mx thead th {
+  padding: .7rem 1rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: .57rem; letter-spacing: .14em;
+  text-transform: uppercase;
+  text-align: left;
+  white-space: nowrap;
+  position: sticky; top: 0; z-index: 2;
+}
+.mx thead th.c { text-align: center; }
+.mx thead th.div { border-left: 1px solid var(--border); }
+
+.mx tbody td {
+  padding: .45rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  vertical-align: middle;
+}
+.mx tbody tr:hover td { background: rgba(232,165,32,.025); }
+
+.mx tbody tr.cat td {
+  background: var(--surface);
+  color: var(--text);
+  font-size: .56rem; letter-spacing: .18em;
+  text-transform: uppercase;
+  padding: .35rem 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.skill { color: var(--text); font-size: .67rem; min-width: 185px; }
+
+.pip {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.55rem; height: 1.15rem; border-radius: 2px;
+  font-size: .58rem; font-weight: 500;
+}
+.pip.s { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+.pip.w { background: var(--rust-bg); color: var(--rust-light); border: 1px solid var(--rust-border); }
+.pip.o { background: var(--sage-bg); color: var(--sage); border: 1px solid var(--sage-border); }
+.pip.wo {
+  background: linear-gradient(90deg, var(--rust-bg) 50%, var(--sage-bg) 50%);
+  color: var(--text); border: 1px solid var(--border-hi);
+  font-size: .48rem; width: 2.1rem;
+}
+
+td.c { text-align: center; }
+td.div { border-left: 1px solid var(--border); }
+td.cnt { text-align: center; font-size: .65rem; }
+td.cnt.s { color: var(--amber); }
+td.cnt.w { color: var(--rust-light); }
+td.cnt.o { color: var(--sage); }
+
+/* ── OVERLAP ── */
+.ov-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.ov-cat {
+  background: var(--card);
+  padding: 1.4rem 1.5rem;
+}
+.ov-cat-lbl {
+  font-family: var(--ff-mono);
+  font-size: .54rem; letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-bottom: .65rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.ov-item { margin-bottom: .8rem; }
+.ov-item:last-child { margin-bottom: 0; }
+.ov-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: .3rem;
+  font-family: var(--ff-mono); font-size: .63rem; color: var(--text);
+}
+.ov-ct { color: var(--amber); font-size: .58rem; }
+.bar-track {
+  height: 3px; background: var(--border);
+  border-radius: 2px; overflow: hidden;
+}
+.bar-fill {
+  height: 100%; background: var(--amber);
+  border-radius: 2px;
+  width: 0%;
+  transition: width 1.1s cubic-bezier(.22,1,.36,1);
+}
+.ov-gap {
+  font-family: var(--ff-mono); font-size: .58rem;
+  color: var(--faint); font-style: italic;
+}
+
+/* ── ASSESSMENT ── */
+.assess-inner {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+.assess-side { position: sticky; top: 2rem; }
+.a-stat { margin-bottom: 2.2rem; }
+.a-num {
+  font-family: var(--ff-disp);
+  font-size: 4rem; color: var(--amber); line-height: 1;
+  margin-bottom: .2rem;
+}
+.a-lbl {
+  font-family: var(--ff-mono);
+  font-size: .58rem; letter-spacing: .15em;
+  text-transform: uppercase; color: var(--muted);
+  line-height: 1.5;
+}
+.assess-prose p {
+  color: var(--muted); font-size: .95rem; line-height: 1.85;
+  margin-bottom: 1.4rem;
+}
+.assess-prose em { color: var(--text); font-style: italic; }
+
+/* ── FOOTER ── */
+footer {
+  padding: 1.8rem 2rem;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--ff-mono); font-size: .57rem;
+  letter-spacing: .12em; color: var(--faint);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes blink {
+  0%,100% { opacity: .2; } 50% { opacity: .7; }
+}
+
+.fi { opacity: 0; transform: translateY(14px); transition: opacity .55s ease, transform .55s ease; }
+.fi.vis { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 720px) {
+  .swot-grid { grid-template-columns: 1fr; }
+  .assess-inner { grid-template-columns: 1fr; gap: 2rem; }
+  .assess-side { position: static; }
+  .hero-title { font-size: clamp(4rem, 18vw, 7rem); }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HERO
+════════════════════════════════════════════ -->
+<section id="hero">
+
+  <div class="topo" aria-hidden="true">
+    <svg viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg" fill="none">
+      <g stroke="#e8a520" stroke-width="1">
+        <!-- primary hill cluster, center-left -->
+        <ellipse cx="420" cy="380" rx="28" ry="18"/>
+        <ellipse cx="420" cy="380" rx="62" ry="42"/>
+        <ellipse cx="420" cy="380" rx="104" ry="72"/>
+        <ellipse cx="420" cy="380" rx="152" ry="106"/>
+        <ellipse cx="420" cy="380" rx="205" ry="144"/>
+        <ellipse cx="420" cy="380" rx="263" ry="186"/>
+        <ellipse cx="420" cy="380" rx="326" ry="232"/>
+        <ellipse cx="420" cy="380" rx="392" ry="280"/>
+        <ellipse cx="420" cy="380" rx="460" ry="330"/>
+        <!-- secondary cluster, upper-right -->
+        <ellipse cx="860" cy="160" rx="22" ry="15"/>
+        <ellipse cx="860" cy="160" rx="55" ry="38"/>
+        <ellipse cx="860" cy="160" rx="95" ry="66"/>
+        <ellipse cx="860" cy="160" rx="140" ry="98"/>
+        <ellipse cx="860" cy="160" rx="190" ry="134"/>
+        <!-- tertiary, lower-right -->
+        <ellipse cx="1060" cy="580" rx="18" ry="12"/>
+        <ellipse cx="1060" cy="580" rx="45" ry="30"/>
+        <ellipse cx="1060" cy="580" rx="82" ry="56"/>
+        <ellipse cx="1060" cy="580" rx="125" ry="85"/>
+      </g>
+      <!-- crosshair axes -->
+      <g stroke="#e8a520" stroke-width=".4" opacity=".4">
+        <line x1="420" y1="0" x2="420" y2="700"/>
+        <line x1="0"   y1="380" x2="1200" y2="380"/>
+      </g>
+      <!-- compass rose -->
+      <g transform="translate(1130,58)" stroke="#e8a520" stroke-width=".9" fill="none" opacity=".8">
+        <circle cx="0" cy="0" r="20"/>
+        <circle cx="0" cy="0" r="3" fill="#e8a520"/>
+        <line x1="0" y1="-24" x2="0" y2="24"/>
+        <line x1="-24" y1="0" x2="24" y2="0"/>
+        <line x1="-17" y1="-17" x2="17" y2="17"/>
+        <line x1="-17" y1="17" x2="17" y2="-17"/>
+        <text x="0" y="-29" text-anchor="middle"
+              font-family="monospace" font-size="8"
+              fill="#e8a520" stroke="none">N</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="hero-meta">MSAI 5563 · AI STUDIO · PROJECT POLY-POI</div>
+
+  <div class="hero-body">
+    <p class="hero-eyebrow">Team Profile · Spring 2026</p>
+    <h1 class="hero-title">
+      Low&#8209;key<br>
+      <span class="accent">Landmarks</span>
+    </h1>
+    <div class="hero-members">
+      <div class="h-member"><div class="h-badge">HA</div><span>Helene Atkins</span></div>
+      <div class="h-member"><div class="h-badge">WB</div><span>Willie Boone</span></div>
+      <div class="h-member"><div class="h-badge">DE</div><span>Darrell Early</span></div>
+      <div class="h-member"><div class="h-badge">HP</div><span>Hunter Phillips</span></div>
+    </div>
+  </div>
+
+  <span class="scroll-cue">scroll</span>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     INDIVIDUAL SWOTs
+════════════════════════════════════════════ -->
+<section id="swots">
+<div class="wrap">
+  <p class="sec-label">01 — Individual Analysis</p>
+  <h2 class="sec-title">SWOT Profiles</h2>
+
+  <div class="swot-grid">
+
+    <!-- HELENE -->
+    <div class="s-card fi">
+      <div class="s-card-head">
+        <div class="s-initials">HA</div>
+        <div class="s-name">HELENE ATKINS</div>
+      </div>
+      <div class="s-quads">
+        <div class="s-q">
+          <div class="q-lbl s">Strengths</div>
+          <div class="pills">
+            <span class="pill s">Coding/Programming</span>
+            <span class="pill s">Testing/QA</span>
+            <span class="pill s">User Research/Interviews</span>
+            <span class="pill s">Documentation</span>
+            <span class="pill s">PowerPoint/Slide Design</span>
+            <span class="pill s">Prototyping/Wireframing</span>
+            <span class="pill s">Meeting Facilitation</span>
+            <span class="pill s">UI/UX Design</span>
+            <span class="pill s">Visual/Graphic Design</span>
+            <span class="pill s">Storyboarding</span>
+            <span class="pill s">Cross-functional Collaboration</span>
+            <span class="pill s">Stakeholder Communication</span>
+            <span class="pill s">Mentoring/Teaching</span>
+          </div>
+        </div>
+        <div class="s-q">
+          <div class="q-lbl w">Weaknesses</div>
+          <div class="pills">
+            <span class="pill w">Data Analysis</span>
+            <span class="pill w">Academic Research</span>
+            <span class="pill w">Requirements Gathering</span>
+            <span class="pill w">Technical Writing</span>
+            <span class="pill w">Presentation/Public Speaking</span>
+            <span class="pill w">Editing/Proofreading</span>
+            <span class="pill w">Excel/Spreadsheets</span>
+            <span class="pill w">Diagramming</span>
+            <span class="pill w">Project Management</span>
+            <span class="pill w">Scheduling/Timeline Planning</span>
+            <span class="pill w">Risk Assessment</span>
+            <span class="pill w">Task Delegation</span>
+          </div>
+        </div>
+        <div class="s-q">
+          <div class="q-lbl o">Opportunities</div>
+          <div class="pills">
+            <span class="pill o">Visual/Graphic Design (lead)</span>
+            <span class="pill o">UI/UX Design (lead)</span>
+            <span class="pill o">Coding/Programming (front-end)</span>
+          </div>
+        </div>
+        <div class="s-q">
+          <div class="q-lbl t">Threats</div>
+          <div class="pills">
+            <span class="pill t">Multiple concurrent roles</span>
+            <span class="pill t">External project commitments</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WILLIE -->
+    <div class="s-card fi" style="transition-delay:.08s">
+      <div class="s-card-head">
+        <div class="s-initials">WB</div>
+        <div class="s-name">WILLIE BOONE</div>
+      </div>
+      <div class="s-quads">
+        <div class="s-q">
+          <div class="q-lbl s">Strengths</div>
+          <div class="pills">
+            <span class="pill s">Coding/Programming</span>
+            <span class="pill s">PowerPoint/Slide Design</span>
+            <span class="pill s">Presentation/Public Speaking</span>
+            <span class="pill s">UI/UX Design</span>
+            <span class="pill s">Cross-functional Collaboration</span>
+            <span class="pill s">AI-assisted Development</span>
+          </div>
+        </div>
+        <div class="s-q">
+          <div class="q-lbl w">Weaknesses</div>
+          <div class="pills">
+            <span class="pill w">Academic Research</span>
+            <span class="pill w">User Research/Interviews</span>
+            <span class="pill w">Data Analysis</span>
+          </div>
+        </div>
+        <div class="s-q">
+          <div class="q-lbl o">Opportunities</div>
+          <div class="pills">
+            <span class="pill o">Project Management</span>
+            <span class="pill o">Scheduling/Timeline Planning</span>
+            <span class="pill o">Meeting Facilitation</span>
+            <span class="pill o">Stakeholder Communication</span>
+          </div>
+        </div>
+        <div class="s-q">
+          <div class="q-lbl t">Threats</div>
+          <div class="pills">
+            <span class="pill t">Evenings only (~1.5 hrs/night)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DARRELL -->
+    <div class="s-card fi" style="transition-delay:.16s">
+      <div class="s-card-head">
+        <div class="s-initials">DE</div>
+        <div class="s-name">DARRELL EARLY</div>
+      </div>
+      <div class="s-quads">
+        <div class="s-q">
+          <div class="q-lbl s">Strengths</div>
+          <div class="pills">
+            <span class="pill s">Presentation/Public Speaking</span>
+            <span class="pill s">User Research/Interviews</span>
+            <span class="pill s">Cross-functional Collaboration</span>
+            <span class="pill s">AI-assisted Development</span>
+          </div>
+        </div>
+        <div class="s-q">
+          <div class="q-lbl w">Weaknesses</div>
+          <div class="pills">
+            <span class="pill w">Coding/Programming</span>
+            <span class="pill w">Data Analysis</span>
+          </div>
+        </div>
+        <div class="s-q">
+          <div class="q-lbl o">Opportunities</div>
+          <div class="pills">
+            <span class="pill o">Storyboarding</span>
+            <span class="pill o">Documentation</span>
+            <span class="pill o">Coding/Programming</span>
+          </div>
+        </div>
+        <div class="s-q">
+          <div class="q-lbl t">Threats</div>
+          <div class="pills">
+            <span class="pill t">Personal availability constraints</span>
+            <span class="pill t">Dependency on teammates for technical execution</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HUNTER -->
+    <div class="s-card fi" style="transition-delay:.24s">
+      <div class="s-card-head">
+        <div class="s-initials">HP</div>
+        <div class="s-name">HUNTER PHILLIPS</div>
+      </div>
+      <div class="s-quads">
+        <div class="s-q">
+          <div class="q-lbl s">Strengths</div>
+          <div class="pills">
+            <span class="pill s">Coding/Programming</span>
+            <span class="pill s">System Design/Architecture</span>
+            <span class="pill s">Presentation/Public Speaking</span>
+          </div>
+        </div>
+        <div class="s-q">
+          <div class="q-lbl w">Weaknesses</div>
+          <div class="pills">
+            <span class="pill w">Academic Research</span>
+            <span class="pill w">Visual/Graphic Design</span>
+            <span class="pill w">Excel/Spreadsheets</span>
+          </div>
+        </div>
+        <div class="s-q">
+          <div class="q-lbl o">Opportunities</div>
+          <div class="pills">
+            <span class="pill o">AI-assisted Development</span>
+          </div>
+        </div>
+        <div class="s-q">
+          <div class="q-lbl t">Threats</div>
+          <div class="pills">
+            <span class="pill t">Newborn</span>
+            <span class="pill t">Travel 04/30</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /swot-grid -->
+</div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     CAPABILITY MATRIX
+════════════════════════════════════════════ -->
+<section id="matrix">
+<div class="wrap">
+  <p class="sec-label">02 — Full Skill Assessment</p>
+  <h2 class="sec-title">Capability Matrix</h2>
+
+  <div class="legend">
+    <div class="l-item"><span class="l-pip s">S</span> Strength</div>
+    <div class="l-item"><span class="l-pip w">W</span> Weakness</div>
+    <div class="l-item"><span class="l-pip o">O</span> Opportunity</div>
+    <div class="l-item"><span class="l-pip wo">W/O</span> Both</div>
+    <div class="l-item" style="color:var(--faint); margin-left:auto">S · W · O columns = team totals</div>
+  </div>
+
+  <div class="mx-wrap">
+  <table class="mx">
+    <thead>
+      <tr>
+        <th style="width:195px">Skill</th>
+        <th class="c">Helene<br>Atkins</th>
+        <th class="c">Willie<br>Boone</th>
+        <th class="c">Darrell<br>Early</th>
+        <th class="c">Hunter<br>Phillips</th>
+        <th class="c div" style="color:var(--amber)">S</th>
+        <th class="c" style="color:var(--rust-light)">W</th>
+        <th class="c" style="color:var(--sage)">O</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="cat"><td colspan="8">Technical</td></tr>
+      <tr>
+        <td class="skill">Coding/Programming</td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"><span class="pip wo">W/O</span></td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c cnt s div">3</td><td class="c cnt w">1</td><td class="c cnt o">1</td>
+      </tr>
+      <tr>
+        <td class="skill">Data Analysis</td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c"></td>
+        <td class="c cnt div"></td><td class="c cnt w">3</td><td class="c cnt o"></td>
+      </tr>
+      <tr>
+        <td class="skill">Testing/QA</td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"></td><td class="c"></td><td class="c"></td>
+        <td class="c cnt s div">1</td><td class="c cnt w"></td><td class="c cnt o"></td>
+      </tr>
+      <tr>
+        <td class="skill">System Design/Architecture</td>
+        <td class="c"></td><td class="c"></td><td class="c"></td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c cnt s div">1</td><td class="c cnt w"></td><td class="c cnt o"></td>
+      </tr>
+
+      <tr class="cat"><td colspan="8">Research &amp; Analysis</td></tr>
+      <tr>
+        <td class="skill">Academic Research</td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c"></td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c cnt div"></td><td class="c cnt w">3</td><td class="c cnt o"></td>
+      </tr>
+      <tr>
+        <td class="skill">Requirements Gathering</td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c"></td><td class="c"></td><td class="c"></td>
+        <td class="c cnt div"></td><td class="c cnt w">1</td><td class="c cnt o"></td>
+      </tr>
+      <tr>
+        <td class="skill">User Research/Interviews</td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"></td>
+        <td class="c cnt s div">2</td><td class="c cnt w">1</td><td class="c cnt o"></td>
+      </tr>
+
+      <tr class="cat"><td colspan="8">Communication</td></tr>
+      <tr>
+        <td class="skill">Technical Writing</td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c"></td><td class="c"></td><td class="c"></td>
+        <td class="c cnt div"></td><td class="c cnt w">1</td><td class="c cnt o"></td>
+      </tr>
+      <tr>
+        <td class="skill">Presentation/Public Speaking</td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c cnt s div">3</td><td class="c cnt w">1</td><td class="c cnt o"></td>
+      </tr>
+      <tr>
+        <td class="skill">Documentation</td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"></td>
+        <td class="c"><span class="pip o">O</span></td>
+        <td class="c"></td>
+        <td class="c cnt s div">1</td><td class="c cnt w"></td><td class="c cnt o">1</td>
+      </tr>
+      <tr>
+        <td class="skill">Editing/Proofreading</td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c"></td><td class="c"></td><td class="c"></td>
+        <td class="c cnt div"></td><td class="c cnt w">1</td><td class="c cnt o"></td>
+      </tr>
+
+      <tr class="cat"><td colspan="8">Tools</td></tr>
+      <tr>
+        <td class="skill">Excel/Spreadsheets</td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c"></td><td class="c"></td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c cnt div"></td><td class="c cnt w">2</td><td class="c cnt o"></td>
+      </tr>
+      <tr>
+        <td class="skill">PowerPoint/Slide Design</td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"></td><td class="c"></td>
+        <td class="c cnt s div">2</td><td class="c cnt w"></td><td class="c cnt o"></td>
+      </tr>
+      <tr>
+        <td class="skill">Diagramming</td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c"></td><td class="c"></td><td class="c"></td>
+        <td class="c cnt div"></td><td class="c cnt w">1</td><td class="c cnt o"></td>
+      </tr>
+      <tr>
+        <td class="skill">Prototyping/Wireframing</td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"></td><td class="c"></td><td class="c"></td>
+        <td class="c cnt s div">1</td><td class="c cnt w"></td><td class="c cnt o"></td>
+      </tr>
+      <tr>
+        <td class="skill">AI-assisted Development</td>
+        <td class="c"></td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"><span class="pip o">O</span></td>
+        <td class="c cnt s div">2</td><td class="c cnt w"></td><td class="c cnt o">1</td>
+      </tr>
+
+      <tr class="cat"><td colspan="8">Management &amp; Organization</td></tr>
+      <tr>
+        <td class="skill">Project Management</td>
+        <td class="c"></td>
+        <td class="c"><span class="pip o">O</span></td>
+        <td class="c"></td><td class="c"></td>
+        <td class="c cnt div"></td><td class="c cnt w"></td><td class="c cnt o">1</td>
+      </tr>
+      <tr>
+        <td class="skill">Scheduling/Timeline Planning</td>
+        <td class="c"></td>
+        <td class="c"><span class="pip o">O</span></td>
+        <td class="c"></td><td class="c"></td>
+        <td class="c cnt div"></td><td class="c cnt w"></td><td class="c cnt o">1</td>
+      </tr>
+      <tr>
+        <td class="skill">Risk Assessment</td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c"></td><td class="c"></td><td class="c"></td>
+        <td class="c cnt div"></td><td class="c cnt w">1</td><td class="c cnt o"></td>
+      </tr>
+      <tr>
+        <td class="skill">Meeting Facilitation</td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"><span class="pip o">O</span></td>
+        <td class="c"></td><td class="c"></td>
+        <td class="c cnt s div">1</td><td class="c cnt w"></td><td class="c cnt o">1</td>
+      </tr>
+      <tr>
+        <td class="skill">Task Delegation</td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c"></td><td class="c"></td><td class="c"></td>
+        <td class="c cnt div"></td><td class="c cnt w">1</td><td class="c cnt o"></td>
+      </tr>
+
+      <tr class="cat"><td colspan="8">Design &amp; Creative</td></tr>
+      <tr>
+        <td class="skill">UI/UX Design</td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"></td><td class="c"></td>
+        <td class="c cnt s div">2</td><td class="c cnt w"></td><td class="c cnt o"></td>
+      </tr>
+      <tr>
+        <td class="skill">Visual/Graphic Design</td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"></td><td class="c"></td>
+        <td class="c"><span class="pip w">W</span></td>
+        <td class="c cnt s div">1</td><td class="c cnt w">1</td><td class="c cnt o"></td>
+      </tr>
+      <tr>
+        <td class="skill">Storyboarding</td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"></td>
+        <td class="c"><span class="pip o">O</span></td>
+        <td class="c"></td>
+        <td class="c cnt s div">1</td><td class="c cnt w"></td><td class="c cnt o">1</td>
+      </tr>
+
+      <tr class="cat"><td colspan="8">Interpersonal</td></tr>
+      <tr>
+        <td class="skill">Cross-functional Collaboration</td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"></td>
+        <td class="c cnt s div">3</td><td class="c cnt w"></td><td class="c cnt o"></td>
+      </tr>
+      <tr>
+        <td class="skill">Stakeholder Communication</td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"><span class="pip o">O</span></td>
+        <td class="c"></td><td class="c"></td>
+        <td class="c cnt s div">1</td><td class="c cnt w"></td><td class="c cnt o">1</td>
+      </tr>
+      <tr>
+        <td class="skill">Mentoring/Teaching</td>
+        <td class="c"><span class="pip s">S</span></td>
+        <td class="c"></td><td class="c"></td><td class="c"></td>
+        <td class="c cnt s div">1</td><td class="c cnt w"></td><td class="c cnt o"></td>
+      </tr>
+    </tbody>
+  </table>
+  </div><!-- /mx-wrap -->
+</div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     SHARED STRENGTHS
+════════════════════════════════════════════ -->
+<section id="overlap">
+<div class="wrap">
+  <p class="sec-label">03 — Overlap Analysis</p>
+  <h2 class="sec-title">Shared Strengths</h2>
+
+  <div class="ov-grid fi">
+    <div class="ov-cat">
+      <div class="ov-cat-lbl">Technical</div>
+      <div class="ov-item">
+        <div class="ov-row"><span>Coding/Programming</span><span class="ov-ct">3 / 4</span></div>
+        <div class="bar-track"><div class="bar-fill" data-w="75"></div></div>
+      </div>
+    </div>
+    <div class="ov-cat">
+      <div class="ov-cat-lbl">Research &amp; Analysis</div>
+      <div class="ov-item">
+        <div class="ov-row"><span>User Research/Interviews</span><span class="ov-ct">2 / 4</span></div>
+        <div class="bar-track"><div class="bar-fill" data-w="50"></div></div>
+      </div>
+    </div>
+    <div class="ov-cat">
+      <div class="ov-cat-lbl">Communication</div>
+      <div class="ov-item">
+        <div class="ov-row"><span>Presentation/Public Speaking</span><span class="ov-ct">3 / 4</span></div>
+        <div class="bar-track"><div class="bar-fill" data-w="75"></div></div>
+      </div>
+    </div>
+    <div class="ov-cat">
+      <div class="ov-cat-lbl">Tools</div>
+      <div class="ov-item">
+        <div class="ov-row"><span>PowerPoint/Slide Design</span><span class="ov-ct">2 / 4</span></div>
+        <div class="bar-track"><div class="bar-fill" data-w="50"></div></div>
+      </div>
+      <div class="ov-item">
+        <div class="ov-row"><span>AI-assisted Development</span><span class="ov-ct">2 / 4</span></div>
+        <div class="bar-track"><div class="bar-fill" data-w="50"></div></div>
+      </div>
+    </div>
+    <div class="ov-cat">
+      <div class="ov-cat-lbl">Design &amp; Creative</div>
+      <div class="ov-item">
+        <div class="ov-row"><span>UI/UX Design</span><span class="ov-ct">2 / 4</span></div>
+        <div class="bar-track"><div class="bar-fill" data-w="50"></div></div>
+      </div>
+    </div>
+    <div class="ov-cat">
+      <div class="ov-cat-lbl">Interpersonal</div>
+      <div class="ov-item">
+        <div class="ov-row"><span>Cross-functional Collaboration</span><span class="ov-ct">3 / 4</span></div>
+        <div class="bar-track"><div class="bar-fill" data-w="75"></div></div>
+      </div>
+    </div>
+    <div class="ov-cat">
+      <div class="ov-cat-lbl">Management &amp; Organization</div>
+      <div class="ov-gap">No overlapping strengths — gap area</div>
+    </div>
+  </div>
+</div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     TEAM ASSESSMENT
+════════════════════════════════════════════ -->
+<section id="assessment">
+<div class="wrap">
+  <p class="sec-label">04 — Summary</p>
+  <h2 class="sec-title">The Assay</h2>
+
+  <div class="assess-inner fi">
+    <div class="assess-side">
+      <div class="a-stat">
+        <div class="a-num">3/4</div>
+        <div class="a-lbl">Members share coding,<br>presenting &amp; collaboration</div>
+      </div>
+      <div class="a-stat">
+        <div class="a-num">4/4</div>
+        <div class="a-lbl">Weak in<br>Data Analysis</div>
+      </div>
+      <div class="a-stat">
+        <div class="a-num">0</div>
+        <div class="a-lbl">Overlapping strengths<br>in Mgmt &amp; Org</div>
+      </div>
+    </div>
+    <div class="assess-prose">
+      <p>Low-key Landmarks is a technically capable, communication-forward team with a strong creative anchor. Three of four members can code, present, and collaborate cross-functionally — a solid baseline for a project that requires both building and pitching. <em>Helene carries the design load almost entirely on her own</em> (UI/UX, visual design, prototyping, storyboarding), which is a significant asset but also a single point of failure for that work. Hunter and Willie cover the technical and presentation layer well, with Hunter providing architectural depth and Willie adding slide and UI design overlap.</p>
+      <p>The team's most consistent gap is <em>Data Analysis — a universal weakness across all members</em> — followed by Academic Research, which three of four find challenging. Management and Organization is notably underdeveloped as a shared strength; no two members overlap here, and formal project structure will likely need to be deliberately assigned rather than assumed. Darrell brings soft skills the rest of the team lacks: a psychology background grounding user research decisions, strong public speaking for user-facing content, and broad AI tool familiarity. The team will be well-served by leaning into its communication and design strengths for deliverables, while proactively delegating analytical and research tasks where they arise.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+
+<footer>
+  <span>LOW-KEY LANDMARKS · MSAI 5563 · AI STUDIO</span>
+  <span>TEAM CAPABILITIES · SPRING 2026</span>
+</footer>
+
+
+<script>
+// Fade-in on scroll
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fi').forEach(el => io.observe(el));
+
+// Animate bars when overlap section enters view
+const barIO = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.querySelectorAll('.bar-fill').forEach(bar => {
+      const w = bar.dataset.w;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        bar.style.width = w + '%';
+      }));
+    });
+    barIO.unobserve(e.target);
+  });
+}, { threshold: 0.2 });
+document.querySelectorAll('.ov-grid').forEach(el => barIO.observe(el));
+</script>
+
+</body>
+</html>
