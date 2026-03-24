@@ -4,6 +4,8 @@ This is an alternative to the manual Git setup guide. Using Claude Desktop's **C
 
 > **Note:** Cowork requires a **paid Claude subscription** (Pro, Max, Teams, or Enterprise). Check [claude.ai/pricing](https://claude.ai/pricing) if you're unsure what plan you have.
 
+> **Free alternative:** If you don't have a paid Claude subscription, check out [OpenCode](https://opencode.ai/) — a free, open-source AI coding assistant with a desktop app for Mac, Windows, and Linux. It supports multiple AI models including Claude, GPT, and Gemini.
+
 ---
 
 ## Step 1: Install Claude Desktop
@@ -60,9 +62,10 @@ Claude will sync your local copy for you.
 
 Once the project is set up, you can ask Claude things like:
 
-- *"What files are in the poly-poi project and what do they do?"*
-- *"Open the shared_notes folder and summarize what's there"*
-- *"Help me understand this document"*
+- _"What files are in the poly-poi project and what do they do?"_
+- _"Open the shared_notes folder and summarize what's there"_
+- _"Help me understand this document"_
 
 Claude has direct access to your local files and can read, explain, and help you work with them — no technical experience required.
 
+---
