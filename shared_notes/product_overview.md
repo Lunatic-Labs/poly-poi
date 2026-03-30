@@ -55,5 +55,3 @@ If the same platform handles all three well, it's a strong signal that it can ac
 Audio narration, multilingual support, AI that adapts to time-of-day or weather, and deeper analytics are all future possibilities the architecture can accommodate — but they're not part of this initial build.
 
 ---
-
-_Full technical architecture is documented separately in the design spec. Questions, gaps, or misalignments — flag them now so we can address them before implementation._
