@@ -2,6 +2,15 @@
 .claude
 scratchpad
 
+# Node
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Supabase local state
+.supabase/
+supabase/.temp/
+
 # Python
 __pycache__/
 *.py[cod]
