@@ -1,8 +1,9 @@
-import { Routes, Route } from "react-router-dom";
-
-// Visitor app: /app/:slug — tenant-branded experience
-// Admin portal: /admin — protected dashboard
-// These routes will expand in Phase 2–4
+import { Navigate, Route, Routes } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./contexts/AuthContext";
+import Dashboard from "./pages/admin/Dashboard";
+import Login from "./pages/admin/Login";
+import Onboarding from "./pages/admin/Onboarding";
 
 function NotFound() {
   return (
@@ -12,19 +13,37 @@ function NotFound() {
   );
 }
 
-function Home() {
-  return (
-    <div className="flex h-screen items-center justify-center">
-      <p className="text-xl font-semibold text-gray-700">PolyPOI</p>
-    </div>
-  );
-}
-
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        {/* Visitor app — Phase 4 */}
+        <Route path="/app/:slug" element={<NotFound />} />
+
+        {/* Admin portal */}
+        <Route path="/admin/login" element={<Login />} />
+        <Route
+          path="/admin/onboarding"
+          element={
+            <ProtectedRoute>
+              <Onboarding />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+
+        {/* Root */}
+        <Route path="/" element={<Navigate to="/admin" replace />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AuthProvider>
   );
 }
