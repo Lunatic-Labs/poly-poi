@@ -59,6 +59,7 @@ make db-push      # applies supabase/migrations/ to linked cloud project
 - Every DB query must filter by `tenant_id` — multi-tenancy is enforced at the application layer (FastAPI uses service_role key which bypasses RLS)
 - `.env.local` lives in `backend/` (where uvicorn runs), not at root
 - Use `gen_random_uuid()` not `uuid_generate_v4()` in migrations (Postgres 17, no uuid-ossp needed)
+- Supabase cloud issues **ES256** JWT access tokens (asymmetric). Backend verifies via JWKS endpoint (`/auth/v1/.well-known/jwks.json`), not the HS256 JWT secret. `SUPABASE_JWT_SECRET` is kept in config but not used for user token verification.
 
 ## Additional Context
 

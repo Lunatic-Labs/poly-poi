@@ -37,9 +37,9 @@ env/
 .ipynb_checkpoints/
 *.ipynb_checkpoints
 
-# Data & models
+# Data & ML model artifacts
 data/
-models/
+/models/
 *.csv
 *.parquet
 *.pkl
