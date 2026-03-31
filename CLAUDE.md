@@ -13,11 +13,20 @@ Config-driven, multi-tenant AI tour guide platform. Points of interest (parks, m
 ## Structure
 
 ```
-backend/          FastAPI app — routers, services, models
-frontend/         React/Vite SPA — visitor app + admin portal (same codebase)
+backend/app/
+  core/           config, database session, auth (JWKS), tenant dependency
+  models/         SQLAlchemy ORM: Tenant, AdminProfile, Stop, Route, Document, Amenity
+  schemas/        Pydantic request/response models for each entity
+  routers/        FastAPI routers: health, tenants, stops, routes, amenities, documents
+  workers/        ARQ background tasks: ingest.py (doc extract → chunk → embed → pgvector)
+frontend/src/
+  lib/            supabase.ts (Supabase JS client), api.ts (fetch wrapper + auth headers)
+  contexts/       AuthContext (Supabase session state)
+  components/     ProtectedRoute
+  pages/admin/    Login, Onboarding (2-step wizard), Dashboard (3-tab content management)
+    content/      StopsTab, DocumentsTab, AmenitiesTab
 supabase/
-  migrations/     SQL migrations — apply with: supabase db push
-  config.toml     Supabase local config (Postgres 17)
+  migrations/     SQL migrations — committed to git, applied with: make db-push
 infra/            Deployment config (Railway, Docker)
 ```
 
@@ -38,6 +47,18 @@ Credentials come from Supabase dashboard → Settings → API (use legacy anon/s
 make backend      # FastAPI at http://localhost:8000 (from backend/.env.local)
 make frontend     # Vite at http://localhost:5173
 ```
+
+The document ingest pipeline requires an ARQ worker and Redis:
+
+```sh
+# Start Redis (Docker or local)
+docker run -p 6379:6379 redis:7
+
+# Run the ingest worker (from backend/)
+cd backend && .venv/bin/arq app.workers.ingest.WorkerSettings
+```
+
+`REDIS_URL` defaults to `redis://localhost:6379`. Set it in `backend/.env.local` for non-default configs.
 
 ### Verification
 
@@ -61,6 +82,9 @@ make db-push      # applies supabase/migrations/ to linked cloud project
 - Use `gen_random_uuid()` not `uuid_generate_v4()` in migrations (Postgres 17, no uuid-ossp needed)
 - **File uploads to Supabase Storage must go through the FastAPI backend**, not directly from the frontend. The frontend's anon-key JWT is blocked by storage RLS. The backend uses `service_role_key` via httpx to bypass it. See `POST /api/admin/tenants/me/logo` as the pattern.
 - Use `api.postForm<T>(path, formData)` from `lib/api.ts` for multipart uploads — it attaches auth headers without setting `Content-Type` (browser sets the multipart boundary automatically)
+- Supabase cloud issues **ES256** JWT access tokens (asymmetric). Backend verifies via JWKS endpoint (`/auth/v1/.well-known/jwks.json`), not the HS256 JWT secret. `SUPABASE_JWT_SECRET` is kept in config but not used for user token verification.
+- All admin API routes use `get_tenant_id` from `core/tenant.py` — resolves `auth.users.id → admin_profiles.tenant_id`, raises 404 if no tenant.
+- Document ingest: upload → Storage → `Document(status=pending)` → ARQ job enqueued. Worker: `pending → processing → ready|failed`. Frontend polls every 3s while any doc is in-flight.
 
 ## Additional Context
 

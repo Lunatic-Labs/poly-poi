@@ -131,7 +131,7 @@ export default function Step2Branding({ onNext }: Props) {
         type="submit"
         className="w-full rounded-lg bg-blue-600 py-2 text-sm font-medium text-white hover:bg-blue-700"
       >
-        Finish setup →
+        Next: Tour Stops →
       </button>
     </form>
   );

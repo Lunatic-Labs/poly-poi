@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../../lib/api";
 import Step1Identity from "./onboarding/Step1Identity";
 import Step2Branding from "./onboarding/Step2Branding";
+import Step3Stops from "./onboarding/Step3Stops";
+import Step4Amenities from "./onboarding/Step4Amenities";
 
 interface Tenant {
   id: string;
@@ -10,7 +12,14 @@ interface Tenant {
   name: string;
 }
 
-const STEPS = ["Identity", "Branding"];
+const STEPS = ["Identity", "Branding", "Tour Stops", "Amenities"];
+
+const STEP_TITLES = [
+  "Set up your organization",
+  "Customize branding",
+  "Add tour stops",
+  "Add amenities",
+];
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -30,25 +39,24 @@ export default function Onboarding() {
   }
 
   async function handleStep2(branding: Record<string, string>) {
-    if (!tenant) return;
     setError(null);
     try {
       await api.patch("/api/admin/tenants/me", { branding });
-      navigate("/admin/dashboard");
+      setStep(2);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save branding");
     }
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-lg rounded-2xl bg-white p-8 shadow">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-10">
+      <div className="w-full max-w-2xl rounded-2xl bg-white p-8 shadow">
         {/* Step indicators */}
         <div className="mb-8 flex items-center gap-2">
           {STEPS.map((label, i) => (
             <div key={label} className="flex items-center gap-2">
               <div
-                className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
                   i <= step ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-500"
                 }`}
               >
@@ -57,14 +65,12 @@ export default function Onboarding() {
               <span className={`text-sm ${i === step ? "font-medium text-gray-900" : "text-gray-400"}`}>
                 {label}
               </span>
-              {i < STEPS.length - 1 && <div className="mx-1 h-px w-8 bg-gray-200" />}
+              {i < STEPS.length - 1 && <div className="mx-1 h-px w-8 shrink-0 bg-gray-200" />}
             </div>
           ))}
         </div>
 
-        <h2 className="mb-6 text-xl font-bold text-gray-900">
-          {step === 0 ? "Set up your organization" : "Customize branding"}
-        </h2>
+        <h2 className="mb-6 text-xl font-bold text-gray-900">{STEP_TITLES[step]}</h2>
 
         {error && (
           <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
@@ -72,6 +78,8 @@ export default function Onboarding() {
 
         {step === 0 && <Step1Identity onNext={handleStep1} />}
         {step === 1 && tenant && <Step2Branding onNext={handleStep2} />}
+        {step === 2 && <Step3Stops onNext={() => setStep(3)} />}
+        {step === 3 && <Step4Amenities onNext={() => navigate("/admin/dashboard")} />}
       </div>
     </div>
   );
