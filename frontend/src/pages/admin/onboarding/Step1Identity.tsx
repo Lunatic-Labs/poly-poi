@@ -1,23 +1,27 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 interface Props {
-  onNext: (data: { name: string; slug: string; contact_info: Record<string, string> }) => void;
+  onNext: (data: {
+    name: string;
+    slug: string;
+    contact_info: Record<string, string>;
+  }) => void;
 }
 
 export default function Step1Identity({ onNext }: Props) {
-  const [name, setName] = useState("");
-  const [slug, setSlug] = useState("");
+  const [name, setName] = useState('');
+  const [slug, setSlug] = useState('');
   const [slugEdited, setSlugEdited] = useState(false);
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   function deriveSlug(value: string) {
     return value
       .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
       .slice(0, 50);
   }
 
@@ -27,7 +31,7 @@ export default function Step1Identity({ onNext }: Props) {
   }
 
   function formatPhone(value: string) {
-    const digits = value.replace(/\D/g, "").slice(0, 10);
+    const digits = value.replace(/\D/g, '').slice(0, 10);
     if (digits.length <= 3) return digits;
     if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
     return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
@@ -42,7 +46,9 @@ export default function Step1Identity({ onNext }: Props) {
     e.preventDefault();
     setError(null);
     if (!/^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$/.test(slug)) {
-      setError("Slug must be 3–50 characters: lowercase letters, digits, or hyphens");
+      setError(
+        'Slug must be 3–50 characters: lowercase letters, digits, or hyphens',
+      );
       return;
     }
     onNext({ name, slug, contact_info: { email, phone } });
@@ -79,12 +85,16 @@ export default function Step1Identity({ onNext }: Props) {
             className="flex-1 border-none bg-transparent focus:outline-none"
           />
         </div>
-        <p className="mt-1 text-xs text-gray-400">Lowercase letters, digits, and hyphens only. Cannot be changed later.</p>
+        <p className="mt-1 text-xs text-gray-400">
+          Lowercase letters, digits, and hyphens only. Cannot be changed later.
+        </p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Contact email</label>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            Contact email
+          </label>
           <input
             type="email"
             value={email}
@@ -93,7 +103,9 @@ export default function Step1Identity({ onNext }: Props) {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Contact phone</label>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            Contact phone
+          </label>
           <input
             type="tel"
             value={phone}

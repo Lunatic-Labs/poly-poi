@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.core.config import settings
-from app.routers import health, tenants
+from app.routers import amenities, documents, health, routes, stops, tenants
 
 app = FastAPI(
     title="PolyPOI API",
@@ -23,6 +23,10 @@ app.add_middleware(
 
 app.include_router(health.router)
 app.include_router(tenants.router)
+app.include_router(stops.router)
+app.include_router(amenities.router)
+app.include_router(routes.router)
+app.include_router(documents.router)
 
 
 @app.exception_handler(Exception)

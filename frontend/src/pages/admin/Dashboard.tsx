@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { api } from "../../lib/api";
+import AmenitiesTab from "./content/AmenitiesTab";
+import DocumentsTab from "./content/DocumentsTab";
+import StopsTab from "./content/StopsTab";
 
 interface Tenant {
   id: string;
@@ -11,11 +14,14 @@ interface Tenant {
   enabled_modules: Record<string, boolean>;
 }
 
+type Tab = "stops" | "documents" | "amenities";
+
 export default function Dashboard() {
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<Tab>("stops");
 
   useEffect(() => {
     api
@@ -42,6 +48,12 @@ export default function Dashboard() {
     );
   }
 
+  const TABS: { id: Tab; label: string }[] = [
+    { id: "stops", label: "Tour stops" },
+    { id: "documents", label: "Documents" },
+    { id: "amenities", label: "Amenities" },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -53,48 +65,50 @@ export default function Dashboard() {
               <p className="text-xs text-gray-400">polypoi.com/app/{tenant.slug}</p>
             )}
           </div>
-          <button
-            onClick={handleSignOut}
-            className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
-          >
-            Sign out
-          </button>
+          <div className="flex items-center gap-3">
+            {tenant && (
+              <a
+                href={`/api/tenant/${tenant.slug}/qr`}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+              >
+                QR code
+              </a>
+            )}
+            <button
+              onClick={handleSignOut}
+              className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
       </header>
 
       {/* Content */}
-      <main className="mx-auto max-w-5xl px-6 py-10">
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-          <DashboardCard title="Tour stops" value="—" sub="Manage in Phase 3" />
-          <DashboardCard title="Documents" value="—" sub="Upload content in Phase 3" />
-          <DashboardCard title="Visitors (30d)" value="—" sub="Analytics in Phase 5" />
-        </div>
-
-        <div className="mt-8 rounded-2xl border border-dashed border-gray-200 bg-white p-8 text-center text-gray-400">
-          <p className="text-sm">Content management and analytics arrive in Phase 3–5.</p>
-          <p className="mt-1 text-xs">For now, verify your QR code works:</p>
-          {tenant && (
-            <a
-              href={`/api/tenant/${tenant.slug}/qr`}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-3 inline-block rounded-lg border border-blue-200 px-4 py-2 text-sm text-blue-600 hover:bg-blue-50"
+      <main className="mx-auto max-w-3xl px-6 py-8">
+        {/* Tabs */}
+        <div className="mb-6 flex gap-1 rounded-xl bg-gray-100 p-1">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
+                activeTab === tab.id
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
             >
-              Download QR code
-            </a>
-          )}
+              {tab.label}
+            </button>
+          ))}
         </div>
-      </main>
-    </div>
-  );
-}
 
-function DashboardCard({ title, value, sub }: { title: string; value: string; sub: string }) {
-  return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-6">
-      <p className="text-sm text-gray-500">{title}</p>
-      <p className="mt-1 text-3xl font-bold text-gray-900">{value}</p>
-      <p className="mt-1 text-xs text-gray-400">{sub}</p>
+        {activeTab === "stops" && <StopsTab />}
+        {activeTab === "documents" && <DocumentsTab />}
+        {activeTab === "amenities" && <AmenitiesTab />}
+      </main>
     </div>
   );
 }

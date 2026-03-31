@@ -42,4 +42,16 @@ export const api = {
   patch: <T>(path: string, body: unknown) =>
     request<T>(path, { method: "PATCH", body: JSON.stringify(body) }),
   postForm: <T>(path: string, body: FormData) => requestForm<T>(path, body),
+  delete: async (path: string): Promise<void> => {
+    const headers = {
+      "Content-Type": "application/json",
+      ...(await authHeaders()),
+    };
+    const res = await fetch(`${BASE}${path}`, { method: "DELETE", headers });
+    if (!res.ok) {
+      if (res.status === 401) throw new Error("Unauthorized");
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(err.detail ?? "Request failed");
+    }
+  },
 };
