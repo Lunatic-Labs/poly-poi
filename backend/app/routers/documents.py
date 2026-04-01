@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 import httpx
@@ -82,7 +83,13 @@ async def upload_document(
     await db.commit()
     await db.refresh(document)
 
-    await enqueue_ingest(str(document.id))
+    try:
+        await enqueue_ingest(str(document.id))
+    except Exception:
+        logging.getLogger(__name__).warning(
+            "Could not enqueue ingest job for document %s — is Redis running?",
+            document.id,
+        )
 
     return document
 

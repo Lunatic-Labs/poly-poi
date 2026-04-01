@@ -204,7 +204,7 @@ async def ingest_document(ctx: dict, document_id: str) -> None:
                     INSERT INTO document_chunks
                         (tenant_id, document_id, content, embedding, chunk_index, token_count)
                     VALUES
-                        (:tenant_id, :document_id, :content, :embedding::vector, :chunk_index, :token_count)
+                        (:tenant_id, :document_id, :content, CAST(:embedding AS vector), :chunk_index, :token_count)
                     """
                 ),
                 {

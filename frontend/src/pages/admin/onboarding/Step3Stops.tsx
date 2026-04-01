@@ -3,6 +3,7 @@ import { api } from "../../../lib/api";
 
 interface Props {
   onNext: () => void;
+  onBack: () => void;
 }
 
 interface StopDraft {
@@ -16,7 +17,7 @@ interface StopDraft {
 const EMPTY: StopDraft = { name: "", description: "", lat: "", lng: "", category: "landmark" };
 const CATEGORIES = ["exhibit", "trailhead", "building", "landmark", "other"];
 
-export default function Step3Stops({ onNext }: Props) {
+export default function Step3Stops({ onNext, onBack }: Props) {
   const [stops, setStops] = useState<StopDraft[]>([{ ...EMPTY }]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -146,21 +147,30 @@ export default function Step3Stops({ onNext }: Props) {
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
-      <div className="flex gap-2 pt-1">
+      <div className="flex items-center justify-between pt-1">
         <button
           type="button"
-          onClick={onNext}
-          className="flex-1 rounded-lg border border-gray-200 py-2 text-sm text-gray-500 hover:bg-gray-50"
+          onClick={onBack}
+          className="text-sm text-gray-400 hover:text-gray-600"
         >
-          Skip for now
+          ← Back
         </button>
-        <button
-          type="submit"
-          disabled={saving}
-          className="flex-1 rounded-lg bg-blue-600 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-        >
-          {saving ? "Saving…" : "Next: Amenities →"}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onNext}
+            className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-500 hover:bg-gray-50"
+          >
+            Skip
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          >
+            {saving ? "Saving…" : "Next: Amenities →"}
+          </button>
+        </div>
       </div>
     </form>
   );

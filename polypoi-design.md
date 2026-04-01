@@ -33,7 +33,7 @@ The system comprises three layers: the Admin Portal, the Backend & Services, and
 
 ### Admin Portal
 
-A web-based dashboard where POI staff log in and manage their site. Capabilities include uploading documents (PDFs, brochures, trail guides) that feed the RAG knowledge base, defining tour stops via structured forms (name, description, GPS coordinates, photos, category, tags), configuring which visitor-facing modules are enabled, managing amenity records, and customizing branding. Each POI receives its own isolated workspace.
+A web-based dashboard where POI staff log in and manage their site. Capabilities include uploading documents (PDFs, brochures, articles) that feed the RAG knowledge base, defining tour stops via structured forms (name, description, GPS coordinates, photos, category, tags), configuring which visitor-facing modules are enabled, managing amenity records, and customizing branding. Each POI receives its own isolated workspace.
 
 ### Backend & API Services
 
@@ -107,7 +107,7 @@ Every POI needs restroom locations, emergency information, and basic wayfinding.
 
 ### Query Architecture
 
-Every POI uses the same query path regardless of content volume. All uploaded documents are chunked, embedded, and stored in the vector database. At query time, the system retrieves against the vector store, assembles a prompt, and sends it to the LLM. This single path keeps behavior consistent and predictable whether a POI has one brochure or fifty trail guides.
+Every POI uses the same query path regardless of content volume. All uploaded documents are chunked, embedded, and stored in the vector database. At query time, the system retrieves against the vector store, assembles a prompt, and sends it to the LLM. This single path keeps behavior consistent and predictable whether a POI has one brochure or fifty.
 
 For POIs whose total document content fits comfortably within the context window (roughly 3,000 tokens or fewer), the system injects all content directly into the prompt rather than performing a vector lookup. This is a latency optimization—the prompt assembly, guardrails, and response behavior are identical either way.
 
@@ -117,7 +117,7 @@ When a staff member uploads a document, the following pipeline executes: the fil
 
 ### Chunking Strategy
 
-The framework uses a single default chunking strategy. The system first respects document structure when it can detect it, then applies size-based overlapping chunks for oversized sections. Within those sections, it applies 500-token overlapping chunks if the section exceeds the target size. This approach handles both short-entry documents (trail-by-trail guides, exhibit catalogs) and long-form continuous narratives (historical accounts, scientific papers) without the framework to maintain multiple strategies.
+The framework uses a single default chunking strategy. The system first respects document structure when it can detect it, then applies size-based overlapping chunks for oversized sections. Within those sections, it applies 500-token overlapping chunks if the section exceeds the target size. This approach handles both short-entry documents and long-form continuous narratives (historical accounts, scientific papers) without the framework to maintain multiple strategies.
 
 ### Query Flow
 

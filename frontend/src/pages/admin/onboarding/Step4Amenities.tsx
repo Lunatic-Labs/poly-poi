@@ -3,6 +3,7 @@ import { api } from "../../../lib/api";
 
 interface Props {
   onNext: () => void;
+  onBack: () => void;
 }
 
 interface AmenityDraft {
@@ -21,7 +22,7 @@ const AMENITY_DEFAULTS: { type: string; label: string; defaultName: string }[] =
   { type: "emergency", label: "Emergency / First Aid", defaultName: "First Aid Station" },
 ];
 
-export default function Step4Amenities({ onNext }: Props) {
+export default function Step4Amenities({ onNext, onBack }: Props) {
   const [amenities, setAmenities] = useState<AmenityDraft[]>(
     AMENITY_DEFAULTS.map((a) => ({ type: a.type, name: a.defaultName, lat: "", lng: "", checked: false })),
   );
@@ -126,21 +127,30 @@ export default function Step4Amenities({ onNext }: Props) {
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
-      <div className="flex gap-2 pt-1">
+      <div className="flex items-center justify-between pt-1">
         <button
           type="button"
-          onClick={onNext}
-          className="flex-1 rounded-lg border border-gray-200 py-2 text-sm text-gray-500 hover:bg-gray-50"
+          onClick={onBack}
+          className="text-sm text-gray-400 hover:text-gray-600"
         >
-          Skip for now
+          ← Back
         </button>
-        <button
-          type="submit"
-          disabled={saving}
-          className="flex-1 rounded-lg bg-blue-600 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-        >
-          {saving ? "Saving…" : "Finish setup →"}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onNext}
+            className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-500 hover:bg-gray-50"
+          >
+            Skip
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          >
+            {saving ? "Saving…" : "Finish setup →"}
+          </button>
+        </div>
       </div>
     </form>
   );
