@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "../../../lib/api";
+import LocationPicker from "../../../components/LocationPicker";
 
 interface Stop {
   id: string;
@@ -9,6 +10,7 @@ interface Stop {
   lng: number;
   category: string;
   interest_tags: string[];
+  photo_urls: string[];
 }
 
 const CATEGORIES = ["exhibit", "trailhead", "building", "landmark", "other"];
@@ -16,8 +18,8 @@ const CATEGORIES = ["exhibit", "trailhead", "building", "landmark", "other"];
 interface StopFormData {
   name: string;
   description: string;
-  lat: string;
-  lng: string;
+  lat: number | null;
+  lng: number | null;
   category: string;
   interest_tags: string;
 }
@@ -25,8 +27,8 @@ interface StopFormData {
 const EMPTY_FORM: StopFormData = {
   name: "",
   description: "",
-  lat: "",
-  lng: "",
+  lat: null,
+  lng: null,
   category: "landmark",
   interest_tags: "",
 };
@@ -39,6 +41,27 @@ export default function StopsTab() {
   const [form, setForm] = useState<StopFormData>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [photoUploadingFor, setPhotoUploadingFor] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !photoUploadingFor) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const updated = await api.postForm<Stop>(
+        `/api/admin/stops/${photoUploadingFor}/photo`,
+        formData,
+      );
+      setStops((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+    } catch {
+      // silently fail — no global error UI for photo upload
+    } finally {
+      setPhotoUploadingFor(null);
+      e.target.value = "";
+    }
+  }
 
   useEffect(() => {
     api
@@ -59,8 +82,8 @@ export default function StopsTab() {
     setForm({
       name: stop.name,
       description: stop.description ?? "",
-      lat: String(stop.lat),
-      lng: String(stop.lng),
+      lat: stop.lat,
+      lng: stop.lng,
       category: stop.category,
       interest_tags: stop.interest_tags.join(", "),
     });
@@ -71,17 +94,15 @@ export default function StopsTab() {
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    const lat = parseFloat(form.lat);
-    const lng = parseFloat(form.lng);
-    if (isNaN(lat) || isNaN(lng)) {
-      setError("Latitude and longitude must be valid numbers");
+    if (form.lat === null || form.lng === null) {
+      setError("Please search for and select a location");
       return;
     }
     const payload = {
       name: form.name,
       description: form.description || null,
-      lat,
-      lng,
+      lat: form.lat,
+      lng: form.lng,
       category: form.category,
       interest_tags: form.interest_tags
         .split(",")
@@ -115,6 +136,13 @@ export default function StopsTab() {
 
   return (
     <div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handlePhotoChange}
+      />
       <div className="mb-4 flex items-center justify-between">
         <p className="text-sm text-gray-500">{stops.length} stop{stops.length !== 1 ? "s" : ""}</p>
         <button
@@ -144,6 +172,17 @@ export default function StopsTab() {
                 </p>
               </div>
               <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setPhotoUploadingFor(stop.id);
+                    fileInputRef.current?.click();
+                  }}
+                  className="text-xs text-gray-500 hover:underline"
+                >
+                  {stop.photo_urls.length > 0
+                    ? `${stop.photo_urls.length} photo${stop.photo_urls.length > 1 ? "s" : ""}`
+                    : "Add photo"}
+                </button>
                 <button
                   onClick={() => openEdit(stop)}
                   className="text-xs text-blue-600 hover:underline"
@@ -183,22 +222,11 @@ export default function StopsTab() {
                 rows={2}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <div className="grid grid-cols-2 gap-2">
-                <input
-                  required
-                  placeholder="Latitude *"
-                  value={form.lat}
-                  onChange={(e) => setForm({ ...form, lat: e.target.value })}
-                  className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  required
-                  placeholder="Longitude *"
-                  value={form.lng}
-                  onChange={(e) => setForm({ ...form, lng: e.target.value })}
-                  className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <LocationPicker
+                lat={form.lat}
+                lng={form.lng}
+                onChange={(lat, lng) => setForm({ ...form, lat, lng })}
+              />
               <select
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}

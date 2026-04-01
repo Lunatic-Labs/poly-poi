@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api } from "../../../lib/api";
+import LocationPicker from "../../../components/LocationPicker";
 
 interface Props {
   onNext: () => void;
@@ -9,8 +10,8 @@ interface Props {
 interface AmenityDraft {
   type: string;
   name: string;
-  lat: string;
-  lng: string;
+  lat: number | null;
+  lng: number | null;
   checked: boolean;
 }
 
@@ -24,7 +25,7 @@ const AMENITY_DEFAULTS: { type: string; label: string; defaultName: string }[] =
 
 export default function Step4Amenities({ onNext, onBack }: Props) {
   const [amenities, setAmenities] = useState<AmenityDraft[]>(
-    AMENITY_DEFAULTS.map((a) => ({ type: a.type, name: a.defaultName, lat: "", lng: "", checked: false })),
+    AMENITY_DEFAULTS.map((a) => ({ type: a.type, name: a.defaultName, lat: null, lng: null, checked: false })),
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,8 +34,12 @@ export default function Step4Amenities({ onNext, onBack }: Props) {
     setAmenities((prev) => prev.map((a, idx) => (idx === i ? { ...a, checked: !a.checked } : a)));
   }
 
-  function update(i: number, field: "name" | "lat" | "lng", value: string) {
+  function update(i: number, field: "name", value: string) {
     setAmenities((prev) => prev.map((a, idx) => (idx === i ? { ...a, [field]: value } : a)));
+  }
+
+  function updateLocation(i: number, lat: number, lng: number) {
+    setAmenities((prev) => prev.map((a, idx) => (idx === i ? { ...a, lat, lng } : a)));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -48,10 +53,8 @@ export default function Step4Amenities({ onNext, onBack }: Props) {
     }
 
     for (const a of selected) {
-      const lat = parseFloat(a.lat);
-      const lng = parseFloat(a.lng);
-      if (isNaN(lat) || isNaN(lng)) {
-        setError(`"${a.name}" has invalid coordinates`);
+      if (a.lat === null || a.lng === null) {
+        setError(`"${a.name}" needs a location — search for it above`);
         return;
       }
     }
@@ -63,8 +66,8 @@ export default function Step4Amenities({ onNext, onBack }: Props) {
           api.post("/api/admin/amenities", {
             name: a.name,
             type: a.type,
-            lat: parseFloat(a.lat),
-            lng: parseFloat(a.lng),
+            lat: a.lat,
+            lng: a.lng,
           }),
         ),
       );
@@ -105,20 +108,11 @@ export default function Step4Amenities({ onNext, onBack }: Props) {
                   onChange={(e) => update(i, "name", e.target.value)}
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    placeholder="Latitude"
-                    value={amenity.lat}
-                    onChange={(e) => update(i, "lat", e.target.value)}
-                    className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <input
-                    placeholder="Longitude"
-                    value={amenity.lng}
-                    onChange={(e) => update(i, "lng", e.target.value)}
-                    className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+                <LocationPicker
+                  lat={amenity.lat}
+                  lng={amenity.lng}
+                  onChange={(lat, lng) => updateLocation(i, lat, lng)}
+                />
               </div>
             )}
           </div>

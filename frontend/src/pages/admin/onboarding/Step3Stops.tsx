@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api } from "../../../lib/api";
+import LocationPicker from "../../../components/LocationPicker";
 
 interface Props {
   onNext: () => void;
@@ -9,12 +10,12 @@ interface Props {
 interface StopDraft {
   name: string;
   description: string;
-  lat: string;
-  lng: string;
+  lat: number | null;
+  lng: number | null;
   category: string;
 }
 
-const EMPTY: StopDraft = { name: "", description: "", lat: "", lng: "", category: "landmark" };
+const EMPTY: StopDraft = { name: "", description: "", lat: null, lng: null, category: "landmark" };
 const CATEGORIES = ["exhibit", "trailhead", "building", "landmark", "other"];
 
 export default function Step3Stops({ onNext, onBack }: Props) {
@@ -24,6 +25,10 @@ export default function Step3Stops({ onNext, onBack }: Props) {
 
   function updateStop(i: number, field: keyof StopDraft, value: string) {
     setStops((prev) => prev.map((s, idx) => (idx === i ? { ...s, [field]: value } : s)));
+  }
+
+  function updateStopLocation(i: number, lat: number, lng: number) {
+    setStops((prev) => prev.map((s, idx) => (idx === i ? { ...s, lat, lng } : s)));
   }
 
   function addStop() {
@@ -45,10 +50,8 @@ export default function Step3Stops({ onNext, onBack }: Props) {
     }
 
     for (const s of valid) {
-      const lat = parseFloat(s.lat);
-      const lng = parseFloat(s.lng);
-      if (isNaN(lat) || isNaN(lng)) {
-        setError(`"${s.name}" has invalid coordinates`);
+      if (s.lat === null || s.lng === null) {
+        setError(`"${s.name}" needs a location — search for it above`);
         return;
       }
     }
@@ -60,8 +63,8 @@ export default function Step3Stops({ onNext, onBack }: Props) {
           api.post("/api/admin/stops", {
             name: s.name,
             description: s.description || null,
-            lat: parseFloat(s.lat),
-            lng: parseFloat(s.lng),
+            lat: s.lat,
+            lng: s.lng,
             category: s.category,
           }),
         ),
@@ -109,20 +112,11 @@ export default function Step3Stops({ onNext, onBack }: Props) {
             rows={2}
             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <div className="grid grid-cols-2 gap-2">
-            <input
-              placeholder="Latitude"
-              value={stop.lat}
-              onChange={(e) => updateStop(i, "lat", e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              placeholder="Longitude"
-              value={stop.lng}
-              onChange={(e) => updateStop(i, "lng", e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <LocationPicker
+            lat={stop.lat}
+            lng={stop.lng}
+            onChange={(lat, lng) => updateStopLocation(i, lat, lng)}
+          />
           <select
             value={stop.category}
             onChange={(e) => updateStop(i, "category", e.target.value)}
