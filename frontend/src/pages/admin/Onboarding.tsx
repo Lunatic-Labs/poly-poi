@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { api } from "../../lib/api";
-import Step1Identity from "./onboarding/Step1Identity";
-import Step2Branding from "./onboarding/Step2Branding";
-import Step3Stops from "./onboarding/Step3Stops";
-import Step4Amenities from "./onboarding/Step4Amenities";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { api } from '../../lib/api';
+import Step1Identity from './onboarding/Step1Identity';
+import Step2Content from './onboarding/Step2Content';
+import Step3Stops from './onboarding/Step3Stops';
+import Step4Amenities from './onboarding/Step4Amenities';
 
 interface Tenant {
   id: string;
@@ -12,39 +12,75 @@ interface Tenant {
   name: string;
 }
 
-const STEPS = ["Identity", "Branding", "Tour Stops", "Amenities"];
+const STEPS = ['Identity', 'Content', 'Tour Stops', 'Amenities'];
 
 const STEP_TITLES = [
-  "Set up your organization",
-  "Customize branding",
-  "Add tour stops",
-  "Add amenities",
+  'Set up your site',
+  'Upload your content',
+  'Add tour stops',
+  'Add amenities',
 ];
 
 export default function Onboarding() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [tenant, setTenant] = useState<Tenant | null>(null);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleStep1(data: { name: string; slug: string; contact_info: Record<string, string> }) {
+  // Resume onboarding if tenant already exists (e.g. after a page refresh)
+  useEffect(() => {
+    api.get<Tenant>('/api/admin/tenants/me').then((t) => {
+      setTenant(t);
+      setStep(1);
+    }).catch(() => {
+      // No tenant yet — start at step 0 as normal
+    });
+  }, []);
+
+  async function handleStep1(data: {
+    name: string;
+    slug: string;
+    branding: {
+      primary_color: string;
+      accent_color: string;
+    };
+    logoFile?: File;
+  }) {
     setError(null);
+    setSaving(true);
     try {
-      const created = await api.post<Tenant>("/api/admin/tenants", data);
-      setTenant(created);
+      if (!tenant) {
+        const created = await api.post<Tenant>('/api/admin/tenants', {
+          name: data.name,
+          slug: data.slug,
+        });
+        setTenant(created);
+      } else if (data.name !== tenant.name) {
+        await api.patch('/api/admin/tenants/me', { name: data.name });
+        setTenant({ ...tenant, name: data.name });
+      }
+
+      let logo_url: string | undefined;
+      if (data.logoFile) {
+        const fd = new FormData();
+        fd.append('file', data.logoFile);
+        const res = await api.postForm<{ logo_url: string }>(
+          '/api/admin/tenants/me/logo',
+          fd,
+        );
+        logo_url = res.logo_url;
+      }
+
+      await api.patch('/api/admin/tenants/me', {
+        branding: { ...data.branding, ...(logo_url ? { logo_url } : {}) },
+      });
+
       setStep(1);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create tenant");
-    }
-  }
-
-  async function handleStep2(branding: Record<string, string>) {
-    setError(null);
-    try {
-      await api.patch("/api/admin/tenants/me", { branding });
-      setStep(2);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save branding");
+      setError(err instanceof Error ? err.message : 'Setup failed');
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -56,30 +92,69 @@ export default function Onboarding() {
           {STEPS.map((label, i) => (
             <div key={label} className="flex items-center gap-2">
               <div
+                onClick={() => { if (i < step) setStep(i); }}
                 className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                  i <= step ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-500"
-                }`}
+                  i <= step
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 text-gray-500'
+                } ${i < step ? 'cursor-pointer hover:bg-blue-700' : ''}`}
               >
-                {i + 1}
+                {i < step ? (
+                  <svg
+                    className="h-3.5 w-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                ) : (
+                  i + 1
+                )}
               </div>
-              <span className={`text-sm ${i === step ? "font-medium text-gray-900" : "text-gray-400"}`}>
+              <span
+                className={`text-sm ${i === step ? 'font-medium text-gray-900' : 'text-gray-400'}`}
+              >
                 {label}
               </span>
-              {i < STEPS.length - 1 && <div className="mx-1 h-px w-8 shrink-0 bg-gray-200" />}
+              {i < STEPS.length - 1 && (
+                <div className="mx-1 h-px w-8 shrink-0 bg-gray-200" />
+              )}
             </div>
           ))}
         </div>
 
-        <h2 className="mb-6 text-xl font-bold text-gray-900">{STEP_TITLES[step]}</h2>
+        <h2 className="mb-6 text-xl font-bold text-gray-900">
+          {STEP_TITLES[step]}
+        </h2>
 
         {error && (
-          <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+          <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </div>
         )}
 
-        {step === 0 && <Step1Identity onNext={handleStep1} />}
-        {step === 1 && tenant && <Step2Branding onNext={handleStep2} />}
-        {step === 2 && <Step3Stops onNext={() => setStep(3)} />}
-        {step === 3 && <Step4Amenities onNext={() => navigate("/admin/dashboard")} />}
+        {step === 0 && (
+          <Step1Identity
+            onNext={handleStep1}
+            loading={saving}
+            initialData={tenant ? { name: tenant.name, slug: tenant.slug } : undefined}
+          />
+        )}
+        {step === 1 && tenant && (
+          <Step2Content onNext={() => setStep(2)} onBack={() => setStep(0)} />
+        )}
+        {step === 2 && (
+          <Step3Stops onNext={() => setStep(3)} onBack={() => setStep(1)} />
+        )}
+        {step === 3 && (
+          <Step4Amenities onNext={() => navigate('/admin/dashboard')} onBack={() => setStep(2)} />
+        )}
       </div>
     </div>
   );

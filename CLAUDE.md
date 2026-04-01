@@ -1,6 +1,6 @@
 # PolyPOI
 
-Config-driven, multi-tenant AI tour guide platform. Points of interest (parks, museums, campuses) spin up a branded visitor experience via QR code. Staff manage content through an admin portal; visitors interact via RAG-powered chatbot, interactive map, and recommendations.
+Config-driven, multi-tenant AI tour guide platform. Any point of interest spins up a branded visitor experience via QR code. Staff manage content through an admin portal; visitors interact via RAG-powered chatbot, interactive map, and recommendations.
 
 ## Stack
 
