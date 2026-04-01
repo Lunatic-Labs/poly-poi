@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../../../lib/api";
 import LocationPicker from "../../../components/LocationPicker";
+import PoiMap from "../../../components/PoiMap";
 
 interface Amenity {
   id: string;
@@ -117,25 +118,30 @@ export default function AmenitiesTab() {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm text-gray-500">
-          {amenities.length} amenit{amenities.length !== 1 ? "ies" : "y"}
-        </p>
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Amenities</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            {amenities.length} amenit{amenities.length !== 1 ? "ies" : "y"}
+          </p>
+        </div>
         <button
           onClick={openCreate}
-          className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
         >
           + Add amenity
         </button>
       </div>
 
-      {amenities.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-200 py-10 text-center text-sm text-gray-400">
-          No amenities yet. Add restrooms, parking, food vendors, and more.
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {amenities.map((amenity) => (
+      <div className={amenities.length > 0 ? "grid grid-cols-5 gap-6" : ""}>
+        <div className={amenities.length > 0 ? "col-span-3" : ""}>
+          {amenities.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-gray-200 py-10 text-center text-sm text-gray-400">
+              No amenities yet. Add restrooms, parking, food vendors, and more.
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {amenities.map((amenity) => (
             <div
               key={amenity.id}
               className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3"
@@ -143,7 +149,7 @@ export default function AmenitiesTab() {
               <div>
                 <p className="text-sm font-medium text-gray-900">{amenity.name}</p>
                 <p className="text-xs text-gray-400">
-                  {amenity.type} · {amenity.lat.toFixed(4)}, {amenity.lng.toFixed(4)}
+                  {amenity.type}
                   {amenity.notes && ` · ${amenity.notes}`}
                 </p>
               </div>
@@ -162,9 +168,17 @@ export default function AmenitiesTab() {
                 </button>
               </div>
             </div>
-          ))}
+              ))}
+            </div>
+          )}
         </div>
-      )}
+
+        {amenities.length > 0 && (
+          <div className="col-span-2">
+            <PoiMap items={amenities} />
+          </div>
+        )}
+      </div>
 
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">

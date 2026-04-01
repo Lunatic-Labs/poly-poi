@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../../lib/api";
 import LocationPicker from "../../../components/LocationPicker";
+import PoiMap from "../../../components/PoiMap";
 
 interface Stop {
   id: string;
@@ -33,6 +34,7 @@ const EMPTY_FORM: StopFormData = {
   interest_tags: "",
 };
 
+
 export default function StopsTab() {
   const [stops, setStops] = useState<Stop[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,6 +57,7 @@ export default function StopsTab() {
         formData,
       );
       setStops((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+      if (editing?.id === updated.id) setEditing(updated);
     } catch {
       // silently fail — no global error UI for photo upload
     } finally {
@@ -126,6 +129,14 @@ export default function StopsTab() {
     }
   }
 
+  async function handlePhotoDelete(url: string) {
+    if (!editing) return;
+    await api.delete(`/api/admin/stops/${editing.id}/photo?url=${encodeURIComponent(url)}`);
+    const updated = { ...editing, photo_urls: editing.photo_urls.filter((u) => u !== url) };
+    setEditing(updated);
+    setStops((prev) => prev.map((s) => (s.id === editing.id ? updated : s)));
+  }
+
   async function handleDelete(stop: Stop) {
     if (!confirm(`Delete "${stop.name}"?`)) return;
     await api.delete(`/api/admin/stops/${stop.id}`);
@@ -143,23 +154,33 @@ export default function StopsTab() {
         className="hidden"
         onChange={handlePhotoChange}
       />
-      <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm text-gray-500">{stops.length} stop{stops.length !== 1 ? "s" : ""}</p>
+
+      {/* Header */}
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Tour Stops</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            {stops.length} stop{stops.length !== 1 ? "s" : ""}
+          </p>
+        </div>
         <button
           onClick={openCreate}
-          className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
         >
           + Add stop
         </button>
       </div>
 
-      {stops.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-200 py-10 text-center text-sm text-gray-400">
-          No stops yet. Add your first tour stop.
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {stops.map((stop) => (
+      {/* Two-column layout: list + map */}
+      <div className={stops.length > 0 ? "grid grid-cols-5 gap-6" : ""}>
+        <div className={stops.length > 0 ? "col-span-3" : ""}>
+          {stops.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-gray-200 py-10 text-center text-sm text-gray-400">
+              No stops yet. Add your first tour stop.
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {stops.map((stop) => (
             <div
               key={stop.id}
               className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3"
@@ -167,7 +188,7 @@ export default function StopsTab() {
               <div>
                 <p className="text-sm font-medium text-gray-900">{stop.name}</p>
                 <p className="text-xs text-gray-400">
-                  {stop.category} · {stop.lat.toFixed(4)}, {stop.lng.toFixed(4)}
+                  {stop.category}
                   {stop.interest_tags.length > 0 && ` · ${stop.interest_tags.join(", ")}`}
                 </p>
               </div>
@@ -197,9 +218,18 @@ export default function StopsTab() {
                 </button>
               </div>
             </div>
-          ))}
+              ))}
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Map panel */}
+        {stops.length > 0 && (
+          <div className="col-span-2">
+            <PoiMap items={stops} />
+          </div>
+        )}
+      </div>
 
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
@@ -222,6 +252,36 @@ export default function StopsTab() {
                 rows={2}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              {editing && (
+                <div>
+                  {editing.photo_urls.length > 0 && (
+                    <div className="mb-2 flex flex-wrap gap-2">
+                      {editing.photo_urls.map((url, i) => (
+                        <div key={i} className="relative">
+                          <img src={url} alt="" className="h-20 w-20 rounded-lg object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => handlePhotoDelete(url)}
+                            className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gray-900/60 text-white hover:bg-red-600"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPhotoUploadingFor(editing.id);
+                      fileInputRef.current?.click();
+                    }}
+                    className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50"
+                  >
+                    + Add photo
+                  </button>
+                </div>
+              )}
               <LocationPicker
                 lat={form.lat}
                 lng={form.lng}

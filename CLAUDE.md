@@ -5,7 +5,7 @@ Config-driven, multi-tenant AI tour guide platform. Any point of interest spins 
 ## Stack
 
 - **Backend**: Python 3.12 + FastAPI + SQLAlchemy async (asyncpg)
-- **Frontend**: React 18 + Vite + TypeScript + Tailwind CSS
+- **Frontend**: React 18 + Vite + TypeScript + Tailwind CSS + react-leaflet (Leaflet 1.9, pinned to react-leaflet v4 — v5 requires React 19)
 - **Database**: Supabase (Postgres 17 + pgvector + Auth + Storage)
 - **AI**: OpenAI GPT-4o (chat), text-embedding-3-small (vectors)
 - **Hosting target**: Railway (single container) + Supabase cloud
@@ -22,8 +22,8 @@ backend/app/
 frontend/src/
   lib/            supabase.ts (Supabase JS client), api.ts (fetch wrapper + auth headers)
   contexts/       AuthContext (Supabase session state)
-  components/     ProtectedRoute
-  pages/admin/    Login, Onboarding (2-step wizard), Dashboard (3-tab content management)
+  components/     ProtectedRoute, LocationPicker (Nominatim search + react-leaflet map)
+  pages/admin/    Login, Onboarding (4-step wizard), Dashboard (3-tab content management)
     content/      StopsTab, DocumentsTab, AmenitiesTab
 supabase/
   migrations/     SQL migrations — committed to git, applied with: make db-push
@@ -85,6 +85,8 @@ make db-push      # applies supabase/migrations/ to linked cloud project
 - Supabase cloud issues **ES256** JWT access tokens (asymmetric). Backend verifies via JWKS endpoint (`/auth/v1/.well-known/jwks.json`), not the HS256 JWT secret. `SUPABASE_JWT_SECRET` is kept in config but not used for user token verification.
 - All admin API routes use `get_tenant_id` from `core/tenant.py` — resolves `auth.users.id → admin_profiles.tenant_id`, raises 404 if no tenant.
 - Document ingest: upload → Storage → `Document(status=pending)` → ARQ job enqueued. Worker: `pending → processing → ready|failed`. Frontend polls every 3s while any doc is in-flight.
+- **Coordinate inputs use `LocationPicker`** (`components/LocationPicker.tsx`) — never add raw lat/lng text inputs. It provides Nominatim address search + draggable map preview and outputs `{ lat: number, lng: number }`.
+- Stop photo upload follows the same httpx/Storage pattern as logo upload — see `POST /api/admin/stops/{id}/photo` in `routers/stops.py`.
 
 ## Additional Context
 
