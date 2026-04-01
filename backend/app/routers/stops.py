@@ -1,9 +1,10 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.tenant import get_tenant_id
 from app.models.stop import Stop
@@ -68,6 +69,49 @@ async def update_stop(
         )
     for field, value in body.model_dump(exclude_unset=True).items():
         setattr(stop, field, value)
+    await db.commit()
+    await db.refresh(stop)
+    return stop
+
+
+@router.post("/stops/{stop_id}/photo", response_model=StopResponse)
+async def upload_stop_photo(
+    stop_id: uuid.UUID,
+    file: UploadFile,
+    tenant_id: uuid.UUID = Depends(get_tenant_id),
+    db: AsyncSession = Depends(get_db),
+):
+    import httpx
+
+    result = await db.execute(
+        select(Stop).where(Stop.id == stop_id, Stop.tenant_id == tenant_id)
+    )
+    stop = result.scalar_one_or_none()
+    if stop is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Stop not found"
+        )
+
+    content = await file.read()
+    storage_path = f"{tenant_id}/stops/{stop_id}/{file.filename}"
+    content_type = file.content_type or "image/jpeg"
+
+    async with httpx.AsyncClient() as client:
+        resp = await client.put(
+            f"{settings.supabase_url}/storage/v1/object/tenant-assets/{storage_path}",
+            content=content,
+            headers={
+                "Authorization": f"Bearer {settings.supabase_service_role_key}",
+                "Content-Type": content_type,
+                "x-upsert": "true",
+            },
+        )
+        resp.raise_for_status()
+
+    photo_url = (
+        f"{settings.supabase_url}/storage/v1/object/public/tenant-assets/{storage_path}"
+    )
+    stop.photo_urls = [*(stop.photo_urls or []), photo_url]
     await db.commit()
     await db.refresh(stop)
     return stop

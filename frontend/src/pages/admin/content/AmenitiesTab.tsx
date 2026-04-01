@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../../../lib/api";
+import LocationPicker from "../../../components/LocationPicker";
 
 interface Amenity {
   id: string;
@@ -23,16 +24,16 @@ const AMENITY_TYPES = [
 interface AmenityFormData {
   name: string;
   type: string;
-  lat: string;
-  lng: string;
+  lat: number | null;
+  lng: number | null;
   notes: string;
 }
 
 const EMPTY_FORM: AmenityFormData = {
   name: "",
   type: "restroom",
-  lat: "",
-  lng: "",
+  lat: null,
+  lng: null,
   notes: "",
 };
 
@@ -64,8 +65,8 @@ export default function AmenitiesTab() {
     setForm({
       name: amenity.name,
       type: amenity.type,
-      lat: String(amenity.lat),
-      lng: String(amenity.lng),
+      lat: amenity.lat,
+      lng: amenity.lng,
       notes: amenity.notes ?? "",
     });
     setError(null);
@@ -75,17 +76,15 @@ export default function AmenitiesTab() {
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    const lat = parseFloat(form.lat);
-    const lng = parseFloat(form.lng);
-    if (isNaN(lat) || isNaN(lng)) {
-      setError("Latitude and longitude must be valid numbers");
+    if (form.lat === null || form.lng === null) {
+      setError("Please search for and select a location");
       return;
     }
     const payload = {
       name: form.name,
       type: form.type,
-      lat,
-      lng,
+      lat: form.lat,
+      lng: form.lng,
       notes: form.notes || null,
     };
     setSaving(true);
@@ -192,22 +191,11 @@ export default function AmenitiesTab() {
                   </option>
                 ))}
               </select>
-              <div className="grid grid-cols-2 gap-2">
-                <input
-                  required
-                  placeholder="Latitude *"
-                  value={form.lat}
-                  onChange={(e) => setForm({ ...form, lat: e.target.value })}
-                  className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  required
-                  placeholder="Longitude *"
-                  value={form.lng}
-                  onChange={(e) => setForm({ ...form, lng: e.target.value })}
-                  className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <LocationPicker
+                lat={form.lat}
+                lng={form.lng}
+                onChange={(lat, lng) => setForm({ ...form, lat, lng })}
+              />
               <input
                 placeholder="Notes (optional)"
                 value={form.notes}
