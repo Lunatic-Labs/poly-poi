@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -115,6 +115,48 @@ async def upload_stop_photo(
     await db.commit()
     await db.refresh(stop)
     return stop
+
+
+@router.delete("/stops/{stop_id}/photo", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_stop_photo(
+    stop_id: uuid.UUID,
+    url: str = Query(...),
+    tenant_id: uuid.UUID = Depends(get_tenant_id),
+    db: AsyncSession = Depends(get_db),
+):
+    import httpx
+
+    result = await db.execute(
+        select(Stop).where(Stop.id == stop_id, Stop.tenant_id == tenant_id)
+    )
+    stop = result.scalar_one_or_none()
+    if stop is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Stop not found"
+        )
+
+    if url not in (stop.photo_urls or []):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Photo not found"
+        )
+
+    prefix = f"{settings.supabase_url}/storage/v1/object/public/tenant-assets/"
+    storage_path = url.removeprefix(prefix)
+
+    async with httpx.AsyncClient() as client:
+        resp = await client.request(
+            "DELETE",
+            f"{settings.supabase_url}/storage/v1/object/tenant-assets",
+            json={"prefixes": [storage_path]},
+            headers={
+                "Authorization": f"Bearer {settings.supabase_service_role_key}",
+                "Content-Type": "application/json",
+            },
+        )
+        resp.raise_for_status()
+
+    stop.photo_urls = [u for u in stop.photo_urls if u != url]
+    await db.commit()
 
 
 @router.delete("/stops/{stop_id}", status_code=status.HTTP_204_NO_CONTENT)
