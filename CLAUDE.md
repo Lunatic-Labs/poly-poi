@@ -66,7 +66,27 @@ cd backend && .venv/bin/arq app.workers.ingest.WorkerSettings
 curl localhost:8000/health    # → {"status":"ok","version":"0.1.0"}
 make lint                     # ruff + eslint
 make typecheck                # tsc --noEmit
+make test-backend             # pytest (22 tests, ~0.1s)
+make test-frontend            # vitest (4 tests)
+make test                     # both
 ```
+
+### Testing
+
+Backend tests live in `backend/tests/`. Run from `backend/` with `.venv/bin/pytest`.
+
+**Key patterns:**
+
+- `backend/tests/conftest.py` sets dummy env vars at module level before any app imports — `Settings()` and `AsyncOpenAI()` run at import time in several modules, so this must come first
+- Admin route tests override `get_db` and `get_tenant_id` together via `app.dependency_overrides` — overriding `get_tenant_id` directly skips both the JWT check and the AdminProfile DB lookup in one step
+- `mock_db.refresh()` side effect populates `id`, `created_at`, `updated_at` — SQLAlchemy's Python-side `default=uuid.uuid4` and `server_default=func.now()` are never applied when commit is mocked
+- Patch `enqueue_ingest` at `app.routers.documents.enqueue_ingest`, not at the source module — it's bound into the router's namespace at import time
+- `pytest-httpx`'s `httpx_mock` fixture intercepts the handler's outbound `httpx.AsyncClient()` calls (e.g. Supabase Storage) without affecting the in-process `ASGITransport` test client
+
+Frontend tests live in `frontend/src/pages/admin/__tests__/`. Run with `npm test`.
+
+- Mock `AuthContext` at the module boundary (`vi.mock('../../../contexts/AuthContext')`) — this prevents `supabase.ts` from throwing on missing env vars, since the real `AuthContext` is never loaded
+- `Login.tsx` inputs use `htmlFor`/`id` pairs — use `getByLabelText` to query them
 
 ### Database migrations
 

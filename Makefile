@@ -54,6 +54,14 @@ db-local-stop:
 db-local-reset:
 	supabase db reset
 
+test-backend:
+	cd backend && .venv/bin/pytest -v
+
+test-frontend:
+	cd frontend && npm test -- --passWithNoTests
+
+test: test-backend test-frontend
+
 lint:
 	cd backend && .venv/bin/ruff check app && .venv/bin/ruff format --check app
 	cd frontend && npm run lint
