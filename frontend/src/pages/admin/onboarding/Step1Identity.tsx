@@ -13,7 +13,11 @@ interface Props {
     logoFile?: File;
   }) => void;
   loading?: boolean;
-  initialData?: { name: string; slug: string };
+  initialData?: {
+    name: string;
+    slug: string;
+    branding?: { primary_color?: string; accent_color?: string; logo_url?: string };
+  };
 }
 
 export default function Step1Identity({ onNext, loading, initialData }: Props) {
@@ -21,9 +25,15 @@ export default function Step1Identity({ onNext, loading, initialData }: Props) {
   const [slug, setSlug] = useState(initialData?.slug ?? "");
   const [slugEdited, setSlugEdited] = useState(!!initialData);
   const [logoFile, setLogoFile] = useState<File | undefined>();
-  const [logoPreview, setLogoPreview] = useState<string | undefined>();
-  const [primaryColor, setPrimaryColor] = useState("#2563eb");
-  const [accentColor, setAccentColor] = useState("#7c3aed");
+  const [logoPreview, setLogoPreview] = useState<string | undefined>(
+    initialData?.branding?.logo_url,
+  );
+  const [primaryColor, setPrimaryColor] = useState(
+    initialData?.branding?.primary_color ?? "#2563eb",
+  );
+  const [accentColor, setAccentColor] = useState(
+    initialData?.branding?.accent_color ?? "#7c3aed",
+  );
   const [logoDragOver, setLogoDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const logoRef = useRef<HTMLInputElement>(null);

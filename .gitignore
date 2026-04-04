@@ -2,6 +2,7 @@
 .claude
 scratchpad
 mockup/
+_mockup/
 
 # Node
 node_modules/
@@ -14,6 +15,7 @@ supabase/.temp/
 
 # Python
 __pycache__/
+.ruff_cache/
 *.py[cod]
 *.pyo
 *.pyd

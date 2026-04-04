@@ -4,6 +4,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import Dashboard from "./pages/admin/Dashboard";
 import Login from "./pages/admin/Login";
 import Onboarding from "./pages/admin/Onboarding";
+import VisitorApp from "./pages/visitor/VisitorApp";
 
 function NotFound() {
   return (
@@ -17,8 +18,8 @@ export default function App() {
   return (
     <AuthProvider>
       <Routes>
-        {/* Visitor app — Phase 4 */}
-        <Route path="/app/:slug" element={<NotFound />} />
+        {/* Visitor app */}
+        <Route path="/app/:slug" element={<VisitorApp />} />
 
         {/* Admin portal */}
         <Route path="/admin/login" element={<Login />} />

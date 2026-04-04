@@ -10,6 +10,11 @@ interface Tenant {
   id: string;
   slug: string;
   name: string;
+  branding: {
+    primary_color?: string;
+    accent_color?: string;
+    logo_url?: string;
+  };
 }
 
 const STEPS = ['Identity', 'Content', 'Tour Stops', 'Amenities'];
@@ -143,7 +148,7 @@ export default function Onboarding() {
           <Step1Identity
             onNext={handleStep1}
             loading={saving}
-            initialData={tenant ? { name: tenant.name, slug: tenant.slug } : undefined}
+            initialData={tenant ? { name: tenant.name, slug: tenant.slug, branding: tenant.branding } : undefined}
           />
         )}
         {step === 1 && tenant && (

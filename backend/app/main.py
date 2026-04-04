@@ -5,7 +5,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.core.config import settings
-from app.routers import amenities, documents, health, routes, stops, tenants
+from app.routers import (
+    amenities,
+    chat,
+    documents,
+    health,
+    routes,
+    stops,
+    tenants,
+    visitor,
+)
 
 app = FastAPI(
     title="PolyPOI API",
@@ -27,6 +36,10 @@ app.include_router(stops.router)
 app.include_router(amenities.router)
 app.include_router(routes.router)
 app.include_router(documents.router)
+# visitor and chat routers registered last — their /{slug}/... patterns are broad
+# and must not shadow the more specific /tenant/... and /admin/... routes above
+app.include_router(chat.router)
+app.include_router(visitor.router)
 
 
 @app.exception_handler(Exception)

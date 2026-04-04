@@ -120,7 +120,7 @@ export default function LocationPicker({ lat, lng, onChange }: LocationPickerPro
 
       {lat !== null && lng !== null && (
         <>
-          <div style={{ height: 200 }} className="overflow-hidden rounded-lg border border-gray-200">
+          <div style={{ height: 180 }} className="overflow-hidden rounded-lg border border-gray-200">
             <MapContainer
               center={[lat, lng]}
               zoom={15}

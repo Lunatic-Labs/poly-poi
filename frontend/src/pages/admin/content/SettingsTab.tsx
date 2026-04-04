@@ -1,11 +1,18 @@
-import { useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { api } from "../../../lib/api";
 
 const BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
 interface Tenant {
   slug: string;
-  branding: Record<string, string>;
+  branding: {
+    primary_color?: string;
+    accent_color?: string;
+    logo_url?: string;
+    welcome_text?: string;
+    tone_preset?: string;
+    [key: string]: string | undefined;
+  };
   enabled_modules: Record<string, boolean>;
 }
 
@@ -55,6 +62,10 @@ export default function SettingsTab() {
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [saving, setSaving] = useState(false);
   const [welcomeText, setWelcomeText] = useState("");
+  const [primaryColor, setPrimaryColor] = useState("#2563eb");
+  const [accentColor, setAccentColor] = useState("#7c3aed");
+  const [logoPreview, setLogoPreview] = useState<string | undefined>();
+  const logoRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     api
@@ -62,6 +73,9 @@ export default function SettingsTab() {
       .then((t) => {
         setTenant(t);
         setWelcomeText(t.branding.welcome_text ?? "");
+        setPrimaryColor(t.branding.primary_color ?? "#2563eb");
+        setAccentColor(t.branding.accent_color ?? "#7c3aed");
+        setLogoPreview(t.branding.logo_url);
       })
       .catch(() => {});
   }, []);
@@ -74,6 +88,29 @@ export default function SettingsTab() {
     } finally {
       setSaving(false);
     }
+  }
+
+  async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !tenant) return;
+    setLogoPreview(URL.createObjectURL(file));
+    setSaving(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await api.postForm<{ logo_url: string }>("/api/admin/tenants/me/logo", fd);
+      setTenant({ ...tenant, branding: { ...tenant.branding, logo_url: res.logo_url } });
+      setLogoPreview(res.logo_url);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleSaveColors() {
+    if (!tenant) return;
+    const updated = { ...tenant.branding, primary_color: primaryColor, accent_color: accentColor };
+    setTenant({ ...tenant, branding: updated });
+    await patchTenant({ branding: updated });
   }
 
   function handleToggle(key: string) {
@@ -129,6 +166,75 @@ export default function SettingsTab() {
                   </div>
                 );
               })}
+            </div>
+          </div>
+
+          {/* Branding */}
+          <div className="rounded-xl border border-gray-200 bg-white p-6">
+            <h2 className="text-base font-semibold text-gray-900">Branding</h2>
+            <p className="mt-0.5 text-sm text-gray-500">Logo and colors shown in your visitor app</p>
+            <div className="mt-5 grid grid-cols-2 gap-6">
+              {/* Logo */}
+              <div>
+                <p className="mb-2 text-sm font-medium text-gray-700">Logo</p>
+                <div
+                  onClick={() => logoRef.current?.click()}
+                  className="flex h-28 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 transition-colors hover:border-gray-400"
+                >
+                  {logoPreview ? (
+                    <img src={logoPreview} alt="Logo" className="h-20 w-20 rounded-lg object-contain" />
+                  ) : (
+                    <p className="text-xs text-gray-400">Click to upload logo</p>
+                  )}
+                </div>
+                <input ref={logoRef} type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+              </div>
+              {/* Colors */}
+              <div className="flex flex-col gap-3">
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Primary color</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={primaryColor}
+                      onChange={(e) => setPrimaryColor(e.target.value)}
+                      className="h-9 w-9 cursor-pointer rounded border border-gray-300"
+                    />
+                    <input
+                      type="text"
+                      value={primaryColor}
+                      onChange={(e) => setPrimaryColor(e.target.value)}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Accent color</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={accentColor}
+                      onChange={(e) => setAccentColor(e.target.value)}
+                      className="h-9 w-9 cursor-pointer rounded border border-gray-300"
+                    />
+                    <input
+                      type="text"
+                      value={accentColor}
+                      onChange={(e) => setAccentColor(e.target.value)}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleSaveColors}
+                    disabled={saving}
+                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    Save colors
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
