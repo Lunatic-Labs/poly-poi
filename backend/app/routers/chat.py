@@ -14,10 +14,11 @@ since EventSource doesn't support POST).
 
 import json
 import logging
+from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -30,9 +31,15 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["chat"])
 
 
+class ChatMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(..., min_length=1, max_length=2000)
+
+
 class ChatRequest(BaseModel):
-    message: str
+    message: str = Field(..., min_length=1, max_length=1000)
     session_id: str
+    history: list[ChatMessage] = Field(default_factory=list, max_length=10)
 
 
 async def _resolve_tenant(slug: str, db: AsyncSession) -> Tenant:
@@ -51,17 +58,13 @@ async def chat(
     body: ChatRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    if not body.message.strip():
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Message cannot be empty",
-        )
-
     tenant = await _resolve_tenant(slug, db)
 
     async def event_stream():
         try:
-            async for token in query(tenant, body.message, body.session_id, db):
+            async for token in query(
+                tenant, body.message, body.session_id, body.history, db
+            ):
                 yield f"data: {json.dumps({'t': token})}\n\n"
         except Exception:
             logger.exception("Chat stream error for slug=%s", slug)

@@ -1,51 +1,63 @@
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-import { useState } from "react";
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
-import { useEffect } from "react";
-import type { VisitorAmenity, VisitorStop } from "../../lib/visitorApi";
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import { useMemo, useState } from 'react';
+import {
+  MapContainer,
+  Marker,
+  Polyline,
+  Popup,
+  TileLayer,
+  useMap,
+} from 'react-leaflet';
+import { useEffect } from 'react';
+import type {
+  VisitorAmenity,
+  VisitorRoute,
+  VisitorStop,
+} from '../../lib/visitorApi';
 
 // Fix Leaflet's default icon paths under Vite
-delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl;
+delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)
+  ._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
   iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
   shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
 const AMENITY_EMOJI: Record<string, string> = {
-  restroom: "🚻",
-  food: "🍽️",
-  parking: "🅿️",
-  emergency: "🚑",
-  gift: "🛍️",
-  partner: "🤝",
-  other: "📍",
+  restroom: '🚻',
+  food: '🍽️',
+  parking: '🅿️',
+  emergency: '🚑',
+  gift: '🛍️',
+  partner: '🤝',
+  other: '📍',
 };
 
 function amenityIcon(type: string): L.DivIcon {
   return L.divIcon({
-    html: `<span style="font-size:20px;line-height:1">${AMENITY_EMOJI[type] ?? "📍"}</span>`,
-    className: "",
+    html: `<span style="font-size:20px;line-height:1">${AMENITY_EMOJI[type] ?? '📍'}</span>`,
+    className: '',
     iconSize: [24, 24],
     iconAnchor: [12, 12],
     popupAnchor: [0, -12],
   });
 }
 
-type AmenityType = VisitorAmenity["type"];
+type AmenityType = VisitorAmenity['type'];
 
 const AMENITY_TYPES: { type: AmenityType; label: string }[] = [
-  { type: "restroom", label: "Restrooms" },
-  { type: "food", label: "Food & Drink" },
-  { type: "parking", label: "Parking" },
-  { type: "emergency", label: "Emergency" },
-  { type: "gift", label: "Gift Shop" },
-  { type: "partner", label: "Partner" },
-  { type: "other", label: "Other" },
+  { type: 'restroom', label: 'Restrooms' },
+  { type: 'food', label: 'Food & Drink' },
+  { type: 'parking', label: 'Parking' },
+  { type: 'emergency', label: 'Emergency' },
+  { type: 'gift', label: 'Gift Shop' },
+  { type: 'partner', label: 'Partner' },
+  { type: 'other', label: 'Other' },
 ];
 
 function FitBounds({ items }: { items: { lat: number; lng: number }[] }) {
@@ -56,17 +68,22 @@ function FitBounds({ items }: { items: { lat: number; lng: number }[] }) {
       map.setView([items[0].lat, items[0].lng], 15);
       return;
     }
-    map.fitBounds(
-      L.latLngBounds(items.map((i) => [i.lat, i.lng])),
-      { padding: [30, 30] },
-    );
+    map.fitBounds(L.latLngBounds(items.map((i) => [i.lat, i.lng])), {
+      padding: [30, 30],
+    });
   }, [items, map]);
   return null;
 }
 
 // ── Stop detail card (modal) ───────────────────────────────────────────────
 
-function StopCard({ stop, onClose }: { stop: VisitorStop; onClose: () => void }) {
+function StopCard({
+  stop,
+  onClose,
+}: {
+  stop: VisitorStop;
+  onClose: () => void;
+}) {
   const hasPhoto = stop.photo_urls.length > 0;
 
   return (
@@ -76,7 +93,7 @@ function StopCard({ stop, onClose }: { stop: VisitorStop; onClose: () => void })
     >
       <div
         className="relative w-full max-w-xs overflow-hidden rounded-3xl shadow-2xl"
-        style={{ aspectRatio: "3 / 4" }}
+        style={{ aspectRatio: '3 / 4' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Background image or fallback */}
@@ -103,15 +120,19 @@ function StopCard({ stop, onClose }: { stop: VisitorStop; onClose: () => void })
           className="absolute bottom-0 left-0 right-0 flex flex-col gap-3 p-5"
           style={{
             background:
-              "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.55) 25%, rgba(0,0,0,0.82) 100%)",
-            backdropFilter: "blur(16px) saturate(0.9)",
-            WebkitBackdropFilter: "blur(16px) saturate(0.9)",
+              'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.55) 25%, rgba(0,0,0,0.82) 100%)',
+            backdropFilter: 'blur(16px) saturate(0.9)',
+            WebkitBackdropFilter: 'blur(16px) saturate(0.9)',
           }}
         >
           <div>
-            <h2 className="text-2xl font-bold leading-tight text-white">{stop.name}</h2>
+            <h2 className="text-2xl font-bold leading-tight text-white">
+              {stop.name}
+            </h2>
             {stop.description && (
-              <p className="mt-2 text-sm leading-relaxed text-white/80">{stop.description}</p>
+              <p className="mt-2 text-sm leading-relaxed text-white/80">
+                {stop.description}
+              </p>
             )}
           </div>
 
@@ -132,7 +153,7 @@ function StopCard({ stop, onClose }: { stop: VisitorStop; onClose: () => void })
             onClick={() =>
               window.open(
                 `https://maps.google.com?q=${stop.lat},${stop.lng}`,
-                "_blank",
+                '_blank',
               )
             }
             className="w-full rounded-2xl bg-white py-3.5 text-sm font-semibold text-gray-900"
@@ -150,25 +171,50 @@ function StopCard({ stop, onClose }: { stop: VisitorStop; onClose: () => void })
 interface Props {
   stops: VisitorStop[];
   amenities: VisitorAmenity[];
+  routes?: VisitorRoute[];
+  primaryColor?: string;
 }
 
-export default function VisitorMap({ stops, amenities }: Props) {
+export default function VisitorMap({
+  stops,
+  amenities,
+  routes = [],
+  primaryColor = '#2563eb',
+}: Props) {
   const availableTypes = [...new Set(amenities.map((a) => a.type))];
   const [visibleTypes, setVisibleTypes] = useState<Set<AmenityType>>(
     new Set(availableTypes),
   );
   const [selectedStop, setSelectedStop] = useState<VisitorStop | null>(null);
+  const [activeRouteId, setActiveRouteId] = useState<string | null>(null);
 
   function toggleType(type: AmenityType) {
     setVisibleTypes((prev) => {
       const next = new Set(prev);
-      if (next.has(type)) { next.delete(type); } else { next.add(type); }
+      if (next.has(type)) {
+        next.delete(type);
+      } else {
+        next.add(type);
+      }
       return next;
     });
   }
 
-  const allItems = stops.map((s) => ({ lat: s.lat, lng: s.lng }));
+  const activeRoute = routes.find((r) => r.id === activeRouteId) ?? null;
+
+  const routeStops = useMemo<VisitorStop[]>(() => {
+    if (!activeRoute) return stops;
+    const byId = new Map(stops.map((s) => [s.id, s]));
+    return activeRoute.stop_order
+      .map((id) => byId.get(id))
+      .filter((s): s is VisitorStop => s !== undefined);
+  }, [activeRoute, stops]);
+
+  const allItems = routeStops.map((s) => ({ lat: s.lat, lng: s.lng }));
   const visibleAmenities = amenities.filter((a) => visibleTypes.has(a.type));
+  const polylinePositions: [number, number][] = activeRoute
+    ? routeStops.map((s) => [s.lat, s.lng])
+    : [];
 
   if (stops.length === 0 && amenities.length === 0) {
     return (
@@ -185,6 +231,85 @@ export default function VisitorMap({ stops, amenities }: Props) {
   return (
     <>
       <div className="flex flex-col gap-3">
+        {/* Tours chip row */}
+        {routes.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setActiveRouteId(null)}
+              className="rounded-full border px-3 py-1 text-xs font-medium transition-colors"
+              style={
+                activeRouteId === null
+                  ? {
+                      borderColor: primaryColor,
+                      backgroundColor: primaryColor,
+                      color: 'white',
+                    }
+                  : {
+                      borderColor: '#d1d5db',
+                      backgroundColor: 'white',
+                      color: '#4b5563',
+                    }
+              }
+            >
+              Explore
+            </button>
+            {routes.map((route) => {
+              const active = route.id === activeRouteId;
+              return (
+                <button
+                  key={route.id}
+                  onClick={() => setActiveRouteId(route.id)}
+                  className="rounded-full border px-3 py-1 text-xs font-medium transition-colors"
+                  style={
+                    active
+                      ? {
+                          borderColor: primaryColor,
+                          backgroundColor: primaryColor,
+                          color: 'white',
+                        }
+                      : {
+                          borderColor: '#d1d5db',
+                          backgroundColor: 'white',
+                          color: '#4b5563',
+                        }
+                  }
+                >
+                  {route.name}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Active tour description */}
+        {activeRoute && (
+          <div
+            className="flex items-start gap-3 rounded-xl border bg-white px-4 py-3 shadow-sm"
+            style={{ borderColor: primaryColor }}
+          >
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-gray-900">
+                {activeRoute.name}
+              </p>
+              {activeRoute.description && (
+                <p className="mt-0.5 text-xs leading-snug text-gray-600">
+                  {activeRoute.description}
+                </p>
+              )}
+              <p className="mt-0.5 text-xs text-gray-400">
+                {routeStops.length} stop{routeStops.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+            <button
+              onClick={() => setActiveRouteId(null)}
+              className="shrink-0 text-xs font-medium hover:underline"
+              style={{ color: primaryColor }}
+            >
+              Clear
+            </button>
+          </div>
+        )}
+
         {/* Amenity layer toggles */}
         {availableTypes.length > 0 && (
           <div className="flex flex-wrap gap-2">
@@ -195,8 +320,8 @@ export default function VisitorMap({ stops, amenities }: Props) {
                   onClick={() => toggleType(type)}
                   className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
                     visibleTypes.has(type)
-                      ? "border-gray-800 bg-gray-800 text-white"
-                      : "border-gray-300 bg-white text-gray-600"
+                      ? 'border-gray-800 bg-gray-800 text-white'
+                      : 'border-gray-300 bg-white text-gray-600'
                   }`}
                 >
                   <span>{AMENITY_EMOJI[type]}</span>
@@ -216,8 +341,16 @@ export default function VisitorMap({ stops, amenities }: Props) {
             />
             <FitBounds items={allItems} />
 
+            {/* Tour polyline */}
+            {activeRoute && polylinePositions.length > 1 && (
+              <Polyline
+                positions={polylinePositions}
+                pathOptions={{ color: primaryColor, weight: 4, opacity: 0.85 }}
+              />
+            )}
+
             {/* Tour stops */}
-            {stops.map((stop) => (
+            {routeStops.map((stop) => (
               <Marker key={stop.id} position={[stop.lat, stop.lng]}>
                 <Popup maxWidth={200}>
                   <div className="flex flex-col gap-1.5">
@@ -250,7 +383,9 @@ export default function VisitorMap({ stops, amenities }: Props) {
                 <Popup>
                   <strong className="text-sm">{amenity.name}</strong>
                   {amenity.notes && (
-                    <p className="text-xs text-gray-600 mt-0.5">{amenity.notes}</p>
+                    <p className="text-xs text-gray-600 mt-0.5">
+                      {amenity.notes}
+                    </p>
                   )}
                 </Popup>
               </Marker>
@@ -259,9 +394,9 @@ export default function VisitorMap({ stops, amenities }: Props) {
         </div>
 
         {/* Stop list */}
-        {stops.length > 0 && (
+        {routeStops.length > 0 && (
           <div className="flex flex-col divide-y divide-gray-100 rounded-xl border border-gray-200 bg-white shadow-sm">
-            {stops.map((stop) => (
+            {routeStops.map((stop) => (
               <button
                 key={stop.id}
                 onClick={() => setSelectedStop(stop)}
@@ -284,8 +419,12 @@ export default function VisitorMap({ stops, amenities }: Props) {
 
                 {/* Text */}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-gray-900">{stop.name}</p>
-                  <p className="text-xs capitalize text-gray-400">{stop.category}</p>
+                  <p className="truncate text-sm font-medium text-gray-900">
+                    {stop.name}
+                  </p>
+                  <p className="text-xs capitalize text-gray-400">
+                    {stop.category}
+                  </p>
                 </div>
 
                 {/* Chevron */}
@@ -295,7 +434,12 @@ export default function VisitorMap({ stops, amenities }: Props) {
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </button>
             ))}

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import {
   visitorApi,
   type VisitorAmenity,
+  type VisitorRoute,
   type VisitorStop,
   type VisitorTenantConfig,
 } from "../../lib/visitorApi";
@@ -378,6 +379,7 @@ export default function VisitorApp() {
   const [config, setConfig] = useState<VisitorTenantConfig | null>(null);
   const [stops, setStops] = useState<VisitorStop[]>([]);
   const [amenities, setAmenities] = useState<VisitorAmenity[]>([]);
+  const [routes, setRoutes] = useState<VisitorRoute[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>("home");
   const [error, setError] = useState<string | null>(null);
   const INTRO_KEY = `polypoi_intro_done_${slug}`;
@@ -392,11 +394,13 @@ export default function VisitorApp() {
       visitorApi.config(slug),
       visitorApi.stops(slug),
       visitorApi.amenities(slug),
+      visitorApi.routes(slug),
     ])
-      .then(([cfg, stps, amens]) => {
+      .then(([cfg, stps, amens, rts]) => {
         setConfig(cfg);
         setStops(stps);
         setAmenities(amens);
+        setRoutes(rts);
       })
       .catch(() => setError("Could not load this visitor experience. Please try again."));
   }, [slug]);
@@ -492,7 +496,12 @@ export default function VisitorApp() {
         )}
         {activeTab === "map" && modules.map && (
           <div className="px-4 py-4">
-            <VisitorMap stops={stops} amenities={amenities} />
+            <VisitorMap
+              stops={stops}
+              amenities={amenities}
+              routes={modules.routes !== false ? routes : []}
+              primaryColor={primaryColor}
+            />
           </div>
         )}
         {activeTab === "recommendations" && (

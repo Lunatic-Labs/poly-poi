@@ -204,7 +204,9 @@ async def _retrieve(message: str, tenant_id: uuid.UUID, db: AsyncSession) -> lis
     return [row[0] for row in result.fetchall()]
 
 
-def _assemble_prompt(tenant: Tenant, message: str, chunks: list[str]) -> list[dict]:
+def _assemble_prompt(
+    tenant: Tenant, message: str, chunks: list[str], history: list
+) -> list[dict]:
     tone = (tenant.branding or {}).get("tone_preset", "friendly")
     tone_instruction = _TONE_SNIPPETS.get(tone, _TONE_SNIPPETS["friendly"])
     context_block = (
@@ -220,10 +222,14 @@ def _assemble_prompt(tenant: Tenant, message: str, chunks: list[str]) -> list[di
         "Context from our knowledge base:\n"
         f"{context_block}"
     )
-    return [
-        {"role": "system", "content": system},
-        {"role": "user", "content": message},
-    ]
+    messages = [{"role": "system", "content": system}]
+
+    # Conversation history (already validated: only user/assistant roles)
+    for msg in history:
+        messages.append({"role": msg.role, "content": msg.content})
+
+    messages.append({"role": "user", "content": message})
+    return messages
 
 
 async def _stream_openai(messages: list[dict]) -> AsyncGenerator[str, None]:
@@ -261,6 +267,7 @@ async def query(
     tenant: Tenant,
     message: str,
     session_id: str,
+    history: list,
     db: AsyncSession,
 ) -> AsyncGenerator[str, None]:
     """
@@ -282,7 +289,7 @@ async def query(
         logger.exception("Vector retrieval failed for tenant %s", tenant.id)
         chunks = []
 
-    messages = _assemble_prompt(tenant, message, chunks)
+    messages = _assemble_prompt(tenant, message, chunks, history)
 
     accumulated: list[str] = []
     async for token in _stream_openai(messages):

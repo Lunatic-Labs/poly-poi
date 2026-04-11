@@ -5,6 +5,7 @@ import { api } from "../../lib/api";
 import AmenitiesTab from "./content/AmenitiesTab";
 import DashboardHome from "./content/DashboardHome";
 import DocumentsTab from "./content/DocumentsTab";
+import RoutesTab from "./content/RoutesTab";
 import SettingsTab from "./content/SettingsTab";
 import StopsTab from "./content/StopsTab";
 
@@ -16,7 +17,7 @@ interface Tenant {
   enabled_modules: Record<string, boolean>;
 }
 
-type ActiveView = "home" | "stops" | "documents" | "amenities" | "settings";
+type ActiveView = "home" | "stops" | "routes" | "documents" | "amenities" | "settings";
 
 const BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
@@ -94,6 +95,12 @@ export default function Dashboard() {
             onClick={() => setActiveView("stops")}
           />
           <NavItem
+            icon={<IconRoutes />}
+            label="Routes"
+            active={activeView === "routes"}
+            onClick={() => setActiveView("routes")}
+          />
+          <NavItem
             icon={<IconAmenities />}
             label="Amenities"
             active={activeView === "amenities"}
@@ -138,6 +145,7 @@ export default function Dashboard() {
         <div className="mx-auto max-w-5xl px-8 py-8">
           {activeView === "home" && tenant && <DashboardHome tenant={tenant} />}
           {activeView === "stops" && <StopsTab />}
+          {activeView === "routes" && <RoutesTab />}
           {activeView === "documents" && <DocumentsTab />}
           {activeView === "amenities" && <AmenitiesTab />}
           {activeView === "settings" && <SettingsTab />}
@@ -210,6 +218,19 @@ function IconStops() {
         strokeLinejoin="round"
         strokeWidth={2}
         d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+      />
+    </svg>
+  );
+}
+
+function IconRoutes() {
+  return (
+    <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M5 5a2 2 0 114 0 2 2 0 01-4 0zm0 0v9m0 0a4 4 0 004 4h6m0 0a2 2 0 104 0 2 2 0 00-4 0z"
       />
     </svg>
   );

@@ -39,6 +39,11 @@ export default function ChatBot({ slug, primaryColor }: Props) {
     const text = input.trim();
     if (!text || streaming) return;
 
+    // Capture recent history before updating state
+    const recentHistory = messages
+      .slice(-10)
+      .map(({ role, content }) => ({ role, content }));
+
     setInput("");
     setMessages((prev) => [...prev, { role: "user", content: text }]);
     setStreaming(true);
@@ -53,7 +58,11 @@ export default function ChatBot({ slug, primaryColor }: Props) {
       const res = await fetch(`${VISITOR_BASE}/api/${slug}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, session_id: sessionId.current }),
+        body: JSON.stringify({
+          message: text,
+          session_id: sessionId.current,
+          history: recentHistory,
+        }),
       });
 
       if (!res.ok || !res.body) {
@@ -208,6 +217,7 @@ export default function ChatBot({ slug, primaryColor }: Props) {
           onKeyDown={handleKeyDown}
           placeholder="Ask a question..."
           rows={1}
+          maxLength={1000}
           disabled={streaming}
           className="flex-1 resize-none rounded-xl border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 disabled:opacity-50"
           style={{ focusRingColor: primaryColor } as React.CSSProperties}

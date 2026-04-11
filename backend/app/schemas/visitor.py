@@ -4,13 +4,28 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
+class VisitorBranding(BaseModel):
+    primary_color: Optional[str] = None
+    accent_color: Optional[str] = None
+    logo_url: Optional[str] = None
+    welcome_text: Optional[str] = None
+    tone_preset: Optional[str] = None
+
+
+class VisitorEnabledModules(BaseModel):
+    chatbot: bool = True
+    map: bool = True
+    recommendations: bool = True
+    routes: bool = True
+
+
 class VisitorTenantConfig(BaseModel):
     """Narrow tenant config for visitor app — strips admin and billing fields."""
 
     slug: str
     name: str
-    branding: dict
-    enabled_modules: dict
+    branding: VisitorBranding
+    enabled_modules: VisitorEnabledModules
     operating_hours: dict
     contact_info: dict
 

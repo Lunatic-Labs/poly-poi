@@ -30,6 +30,7 @@ export interface VisitorTenantConfig {
     chatbot?: boolean;
     map?: boolean;
     recommendations?: boolean;
+    routes?: boolean;
   };
   operating_hours: Record<string, { open: string; close: string } | string>;
   contact_info: {
