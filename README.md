@@ -20,7 +20,8 @@ PolyPOI is a platform where site staff stand up a fully branded visitor experien
 | ------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | **Chatbot**         | Answers natural-language questions from the site's own knowledge base (RAG). Acknowledges gaps rather than guessing. |
 | **Interactive map** | Shows tour stops and amenities (restrooms, food, parking). Tap a stop for details and photos.                        |
-| **Recommendations** | Asks 2–3 quick preference questions and suggests a personalized route.                                               |
+| **Guided routes**   | Pick a staff-curated route on the map to trace an ordered path between stops and follow it end to end.              |
+| **Recommendations** | Asks a few quick preference questions and suggests stops matched to the visitor's interests.                         |
 | **Amenity lookup**  | Always-on quick access to practical info — hours, emergency contacts, accessibility.                                 |
 
 ---
@@ -32,6 +33,7 @@ Staff manage their site through a guided web portal:
 - **Onboarding wizard** — set up org identity, branding colors, logo, and tone
 - **Document uploads** — PDFs and docs are chunked, embedded, and added to the knowledge base automatically
 - **Stop management** — add tour stops with GPS coordinates, photos, and interest tags
+- **Route builder** — arrange stops into ordered guided routes visitors can follow on the map
 - **Amenity records** — structured forms for restrooms, food, parking, emergency info
 - **QR code download** — generates a scannable PNG linking visitors to the site
 
