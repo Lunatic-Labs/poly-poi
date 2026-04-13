@@ -49,6 +49,7 @@ export interface VisitorStop {
   lat: number;
   lng: number;
   category: string;
+  is_accessible: boolean;
   interest_tags: string[];
   photo_urls: string[];
 }

@@ -136,8 +136,13 @@ function StopCard({
             )}
           </div>
 
-          {stop.interest_tags.length > 0 && (
+          {(stop.is_accessible || stop.interest_tags.length > 0) && (
             <div className="flex flex-wrap gap-2">
+              {stop.is_accessible && (
+                <span className="rounded-full bg-blue-500/30 px-3 py-1 text-xs font-medium text-white">
+                  &#x267F; Accessible
+                </span>
+              )}
               {stop.interest_tags.map((tag) => (
                 <span
                   key={tag}
@@ -361,7 +366,14 @@ export default function VisitorMap({
                         className="w-full h-24 object-cover rounded"
                       />
                     )}
-                    <strong className="text-sm">{stop.name}</strong>
+                    <strong className="text-sm">
+                      {stop.name}
+                      {stop.is_accessible && (
+                        <span className="ml-1 text-blue-500" title="Accessible">
+                          &#x267F;
+                        </span>
+                      )}
+                    </strong>
                     <button
                       onClick={() => setSelectedStop(stop)}
                       className="mt-0.5 text-left text-xs font-medium text-blue-600 hover:underline"
@@ -424,6 +436,9 @@ export default function VisitorMap({
                   </p>
                   <p className="text-xs capitalize text-gray-400">
                     {stop.category}
+                    {stop.is_accessible && (
+                      <span className="ml-1 text-blue-500" title="Accessible">&#x267F;</span>
+                    )}
                   </p>
                 </div>
 

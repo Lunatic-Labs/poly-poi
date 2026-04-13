@@ -13,9 +13,10 @@ interface StopDraft {
   lat: number | null;
   lng: number | null;
   category: string;
+  is_accessible: boolean;
 }
 
-const EMPTY: StopDraft = { name: "", description: "", lat: null, lng: null, category: "landmark" };
+const EMPTY: StopDraft = { name: "", description: "", lat: null, lng: null, category: "landmark", is_accessible: false };
 const CATEGORIES = ["exhibit", "trailhead", "building", "landmark", "other"];
 
 export default function Step3Stops({ onNext, onBack }: Props) {
@@ -66,6 +67,7 @@ export default function Step3Stops({ onNext, onBack }: Props) {
             lat: s.lat,
             lng: s.lng,
             category: s.category,
+            is_accessible: s.is_accessible,
           }),
         ),
       );
@@ -128,6 +130,19 @@ export default function Step3Stops({ onNext, onBack }: Props) {
               </option>
             ))}
           </select>
+          <label className="flex items-center gap-2 py-1">
+            <input
+              type="checkbox"
+              checked={stop.is_accessible}
+              onChange={(e) =>
+                setStops((prev) =>
+                  prev.map((s, idx) => (idx === i ? { ...s, is_accessible: e.target.checked } : s))
+                )
+              }
+              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+            />
+            <span className="text-sm text-gray-700">Handicap accessible</span>
+          </label>
         </div>
       ))}
 

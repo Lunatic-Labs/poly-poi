@@ -13,6 +13,7 @@ class StopCreate(BaseModel):
     lat: float
     lng: float
     category: StopCategory = "landmark"
+    is_accessible: bool = False
     interest_tags: list[str] = []
     photo_urls: list[str] = []
 
@@ -23,6 +24,7 @@ class StopUpdate(BaseModel):
     lat: Optional[float] = None
     lng: Optional[float] = None
     category: Optional[StopCategory] = None
+    is_accessible: Optional[bool] = None
     interest_tags: Optional[list[str]] = None
     photo_urls: Optional[list[str]] = None
 
@@ -35,6 +37,7 @@ class StopResponse(BaseModel):
     lat: float
     lng: float
     category: str
+    is_accessible: bool
     interest_tags: list[str]
     photo_urls: list[str]
     created_at: datetime

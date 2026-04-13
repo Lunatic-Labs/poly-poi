@@ -10,6 +10,8 @@ interface Props {
 export default function Recommendations({ stops, primaryColor, initialTags = [] }: Props) {
   const allTags = [...new Set(stops.flatMap((s) => s.interest_tags))].sort();
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set(initialTags));
+  const [accessibleOnly, setAccessibleOnly] = useState(false);
+  const hasAccessible = stops.some((s) => s.is_accessible);
 
   function toggleTag(tag: string) {
     setSelectedTags((prev) => {
@@ -19,10 +21,9 @@ export default function Recommendations({ stops, primaryColor, initialTags = [] 
     });
   }
 
-  const filtered =
-    selectedTags.size === 0
-      ? stops
-      : stops.filter((s) => s.interest_tags.some((t) => selectedTags.has(t)));
+  const filtered = stops
+    .filter((s) => !accessibleOnly || s.is_accessible)
+    .filter((s) => selectedTags.size === 0 || s.interest_tags.some((t) => selectedTags.has(t)));
 
   if (stops.length === 0) {
     return (
@@ -34,13 +35,26 @@ export default function Recommendations({ stops, primaryColor, initialTags = [] 
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Tag filter */}
-      {allTags.length > 0 && (
+      {/* Filters */}
+      {(allTags.length > 0 || hasAccessible) && (
         <div className="flex flex-col gap-2">
           <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
             Filter by interest
           </p>
           <div className="flex flex-wrap gap-2">
+            {hasAccessible && (
+              <button
+                onClick={() => setAccessibleOnly((v) => !v)}
+                className="rounded-full border px-3 py-1 text-xs font-medium transition-colors"
+                style={
+                  accessibleOnly
+                    ? { backgroundColor: "#3b82f6", borderColor: "#3b82f6", color: "#fff" }
+                    : { borderColor: "#d1d5db", color: "#374151" }
+                }
+              >
+                &#x267F; Accessible
+              </button>
+            )}
             {allTags.map((tag) => (
               <button
                 key={tag}
@@ -86,6 +100,9 @@ export default function Recommendations({ stops, primaryColor, initialTags = [] 
                   <span className="text-xs text-gray-400 capitalize flex-shrink-0">
                     {stop.category}
                   </span>
+                  {stop.is_accessible && (
+                    <span className="text-blue-500 flex-shrink-0" title="Accessible">&#x267F;</span>
+                  )}
                 </div>
                 {stop.description && (
                   <p className="text-xs text-gray-600 line-clamp-2 leading-snug">

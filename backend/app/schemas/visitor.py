@@ -41,6 +41,7 @@ class VisitorStop(BaseModel):
     lat: float
     lng: float
     category: str
+    is_accessible: bool
     interest_tags: list[str]
     photo_urls: list[str]
 
