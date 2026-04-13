@@ -31,6 +31,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.models.amenity import Amenity
+from app.models.stop import Stop
 from app.models.tenant import Tenant
 
 logger = logging.getLogger(__name__)
@@ -59,6 +60,10 @@ _FOOD = re.compile(
 )
 _PARKING = re.compile(
     r"\b(parking|park my car|parking lot|parking garage|where (do i|can i) park)\b",
+    re.I,
+)
+_ACCESSIBLE = re.compile(
+    r"\b(accessible|accessibility|wheelchair|handicap|ada|disabled|disability|mobility)\b",
     re.I,
 )
 
@@ -152,17 +157,38 @@ async def _format_amenities(
     return "\n".join(lines)
 
 
+async def _format_accessible_stops(tenant_id: uuid.UUID, db: AsyncSession) -> str:
+    result = await db.execute(
+        select(Stop).where(Stop.tenant_id == tenant_id, Stop.is_accessible.is_(True))
+    )
+    stops = result.scalars().all()
+    if not stops:
+        return (
+            "Accessibility information for specific stops hasn't been added yet. "
+            "Please contact staff for assistance with accessibility needs."
+        )
+    lines = ["Here are the accessible stops:"]
+    for s in stops:
+        line = f"• {s.name}"
+        if s.description:
+            line += f" — {s.description[:120]}"
+        lines.append(line)
+    return "\n".join(lines)
+
+
 async def _classify_and_handle_structured(
     message: str, tenant: Tenant, db: AsyncSession
 ) -> Optional[str]:
     """
     Return a direct string answer for structured intents, or None to fall through to RAG.
-    Checks: hours → contact → emergency → restroom → food → parking.
+    Checks: hours → contact → accessibility → emergency → restroom → food → parking.
     """
     if _HOURS.search(message):
         return _format_hours(tenant)
     if _CONTACT.search(message):
         return _format_contact(tenant)
+    if _ACCESSIBLE.search(message):
+        return await _format_accessible_stops(tenant.id, db)
 
     for pattern, amenity_type in _AMENITY_INTENTS:
         if pattern.search(message):

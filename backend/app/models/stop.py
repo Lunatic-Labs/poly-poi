@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import ARRAY, Column, DateTime, String, Text, func
+from sqlalchemy import ARRAY, Boolean, Column, DateTime, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.types import Float
 
@@ -17,6 +17,7 @@ class Stop(Base):
     lat = Column(Float, nullable=False)
     lng = Column(Float, nullable=False)
     category = Column(String, nullable=False, default="landmark")
+    is_accessible = Column(Boolean, nullable=False, default=False)
     interest_tags = Column(ARRAY(String), nullable=False, default=list)
     photo_urls = Column(ARRAY(String), nullable=False, default=list)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

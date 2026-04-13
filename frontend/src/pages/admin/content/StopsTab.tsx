@@ -10,6 +10,7 @@ interface Stop {
   lat: number;
   lng: number;
   category: string;
+  is_accessible: boolean;
   interest_tags: string[];
   photo_urls: string[];
 }
@@ -22,6 +23,7 @@ interface StopFormData {
   lat: number | null;
   lng: number | null;
   category: string;
+  is_accessible: boolean;
   interest_tags: string[];
 }
 
@@ -31,6 +33,7 @@ const EMPTY_FORM: StopFormData = {
   lat: null,
   lng: null,
   category: "landmark",
+  is_accessible: false,
   interest_tags: [],
 };
 
@@ -92,6 +95,7 @@ export default function StopsTab() {
       lat: stop.lat,
       lng: stop.lng,
       category: stop.category,
+      is_accessible: stop.is_accessible,
       interest_tags: [...stop.interest_tags],
     });
     setTagInput("");
@@ -113,6 +117,7 @@ export default function StopsTab() {
       lat: form.lat,
       lng: form.lng,
       category: form.category,
+      is_accessible: form.is_accessible,
       interest_tags: form.interest_tags,
     };
     setSaving(true);
@@ -190,7 +195,12 @@ export default function StopsTab() {
               className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3"
             >
               <div>
-                <p className="text-sm font-medium text-gray-900">{stop.name}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {stop.name}
+                  {stop.is_accessible && (
+                    <span className="ml-1.5 text-blue-500" title="Accessible">&#x267F;</span>
+                  )}
+                </p>
                 <p className="text-xs text-gray-400">
                   {stop.category}
                   {stop.interest_tags.length > 0 && ` · ${stop.interest_tags.join(", ")}`}
@@ -343,6 +353,15 @@ export default function StopsTab() {
                     </option>
                   ))}
                 </select>
+                <label className="flex items-center gap-2 py-1">
+                  <input
+                    type="checkbox"
+                    checked={form.is_accessible}
+                    onChange={(e) => setForm({ ...form, is_accessible: e.target.checked })}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                  />
+                  <span className="text-sm text-gray-700">Handicap accessible</span>
+                </label>
                 {/* Tag pill input */}
                 <div className="flex min-h-[38px] flex-wrap gap-1.5 rounded-lg border border-gray-300 px-2.5 py-2 focus-within:ring-2 focus-within:ring-blue-500">
                   {form.interest_tags.map((tag) => (
