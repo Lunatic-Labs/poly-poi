@@ -59,8 +59,8 @@ export default function Dashboard() {
       <aside className="flex w-52 shrink-0 flex-col border-r border-gray-200 bg-white">
         {/* Logo */}
         <div className="px-5 py-5">
-          <span className="text-base font-bold text-gray-900">Poly</span>
-          <span className="text-base font-bold text-blue-600">POI</span>
+          <span className="text-base font-bold text-gray-900">Low-Key </span>
+          <span className="text-base font-bold text-blue-600">Landmarks</span>
         </div>
 
         {/* Tenant identity */}

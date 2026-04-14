@@ -2,6 +2,8 @@
 
 Config-driven, multi-tenant AI tour guide platform. Any point of interest spins up a branded visitor experience via QR code. Staff manage content through an admin portal; visitors interact via RAG-powered chatbot, interactive map, and recommendations.
 
+**Brand vs. internal name**: User-facing product is **"Low-Key Landmarks"**. Internal identifiers stay **"polypoi"** (repo, package names, localStorage key prefix `polypoi_<feature>_${slug}`, Nominatim User-Agent, env vars, `polypoi.com/app/...` URL placeholders). When editing UI copy, page titles, headings, or emails, use "Low-Key Landmarks".
+
 ## Stack
 
 - **Backend**: Python 3.12 + FastAPI + SQLAlchemy async (asyncpg)
