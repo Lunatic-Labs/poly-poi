@@ -4,6 +4,8 @@ scratchpad
 mockup/
 _mockup/
 thoughts/
+.agents
+AGENTS.md
 
 # Node
 node_modules/

@@ -264,35 +264,32 @@ function HomeView({ config, stops, amenities, onNavigate }: HomeViewProps) {
   const modules = config.enabled_modules;
 
   type ExploreItem = { tab: Tab; title: string; subtitle: string; icon: React.ReactNode };
-  const exploreItems: ExploreItem[] = [
-    modules.chatbot
-      ? {
-          tab: "guide",
-          title: "Ask your guide",
-          subtitle: "Chat with your AI guide",
-          icon: <IconChat className="h-6 w-6 text-gray-500" />,
-        }
-      : null,
-    modules.map
-      ? {
-          tab: "map",
-          title: "Interactive map",
-          subtitle: "Stops, trails, amenities",
-          icon: <IconMap className="h-6 w-6 text-gray-500" />,
-        }
-      : null,
-    modules.recommendations && stops.length > 0
-      ? {
-          tab: "recommendations",
-          title: "Recommended for you",
-          subtitle: (() => {
-            const tags = [...new Set(stops.flatMap((s) => s.interest_tags))].slice(0, 3);
-            return tags.length > 0 ? tags.join(" · ") : "Explore top stops";
-          })(),
-          icon: <IconSparkle className="h-6 w-6 text-gray-500" />,
-        }
-      : null,
-  ].filter((item): item is ExploreItem => item !== null);
+  const exploreItems: ExploreItem[] = [];
+  if (modules.chatbot) {
+    exploreItems.push({
+      tab: "guide",
+      title: "Ask your guide",
+      subtitle: "Chat with your AI guide",
+      icon: <IconChat className="h-6 w-6 text-gray-500" />,
+    });
+  }
+  if (modules.map) {
+    exploreItems.push({
+      tab: "map",
+      title: "Interactive map",
+      subtitle: "Stops, trails, amenities",
+      icon: <IconMap className="h-6 w-6 text-gray-500" />,
+    });
+  }
+  if (modules.recommendations && stops.length > 0) {
+    const tags = [...new Set(stops.flatMap((s) => s.interest_tags))].slice(0, 3);
+    exploreItems.push({
+      tab: "recommendations",
+      title: "Recommended for you",
+      subtitle: tags.length > 0 ? tags.join(" · ") : "Explore top stops",
+      icon: <IconSparkle className="h-6 w-6 text-gray-500" />,
+    });
+  }
 
   const restroom = amenities.find((a) => a.type === "restroom");
   const emergency = amenities.find((a) => a.type === "emergency");
