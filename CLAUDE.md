@@ -8,7 +8,7 @@ Config-driven, multi-tenant AI tour guide platform. Any point of interest spins 
 - **Frontend**: React 18 + Vite + TypeScript + Tailwind CSS + react-leaflet (Leaflet 1.9, pinned to react-leaflet v4 — v5 requires React 19)
 - **Database**: Supabase (Postgres 17 + pgvector + Auth + Storage)
 - **AI**: OpenAI GPT-4o (chat), text-embedding-3-small (vectors)
-- **Hosting target**: Railway (single container) + Supabase cloud
+- **Hosting**: Railway (API + ARQ worker + Redis) + Vercel (frontend) + Supabase cloud (DB + Auth + Storage)
 
 ## Structure
 
