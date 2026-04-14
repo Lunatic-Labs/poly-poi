@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../lib/api';
 import Step1Identity from './onboarding/Step1Identity';
 import Step2Content from './onboarding/Step2Content';
@@ -28,10 +29,16 @@ const STEP_TITLES = [
 
 export default function Onboarding() {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const [step, setStep] = useState(0);
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  async function handleSignOut() {
+    await signOut();
+    navigate('/admin/login');
+  }
 
   // Resume onboarding if tenant already exists (e.g. after a page refresh)
   useEffect(() => {
@@ -92,6 +99,19 @@ export default function Onboarding() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-10">
       <div className="w-full max-w-2xl rounded-2xl bg-white p-8 shadow">
+        {/* Account bar */}
+        <div className="mb-6 flex items-center justify-end gap-2 text-xs text-gray-400">
+          {user?.email && <span className="truncate">Signed in as {user.email}</span>}
+          {user?.email && <span aria-hidden="true">·</span>}
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="hover:text-gray-600 hover:underline"
+          >
+            Sign out
+          </button>
+        </div>
+
         {/* Step indicators */}
         <div className="mb-8 flex items-center gap-2">
           {STEPS.map((label, i) => (
