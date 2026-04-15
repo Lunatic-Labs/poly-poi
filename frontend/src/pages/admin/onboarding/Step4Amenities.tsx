@@ -87,7 +87,7 @@ export default function Step4Amenities({ onNext, onBack }: Props) {
 
       <div className="space-y-2">
         {amenities.map((amenity, i) => (
-          <div key={amenity.type} className="rounded-xl border border-gray-200 overflow-hidden">
+          <div key={amenity.type} className="rounded-xl border border-gray-200">
             <label className="flex cursor-pointer items-center gap-3 px-4 py-3">
               <input
                 type="checkbox"
@@ -101,7 +101,7 @@ export default function Step4Amenities({ onNext, onBack }: Props) {
             </label>
 
             {amenity.checked && (
-              <div className="border-t border-gray-100 bg-gray-50 px-4 py-3 space-y-2">
+              <div className="border-t border-gray-100 bg-gray-50 rounded-b-xl px-4 py-3 space-y-2">
                 <input
                   placeholder="Name"
                   value={amenity.name}
