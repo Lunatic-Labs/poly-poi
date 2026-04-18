@@ -24,10 +24,21 @@ class TenantCreate(BaseModel):
 
 class TenantUpdate(BaseModel):
     name: Optional[str] = None
+    slug: Optional[str] = None
     branding: Optional[dict] = None
     enabled_modules: Optional[dict] = None
     operating_hours: Optional[dict] = None
     contact_info: Optional[dict] = None
+
+    @field_validator("slug")
+    @classmethod
+    def validate_slug(cls, v: str | None) -> str | None:
+        if v is not None and not re.match(r"^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$", v):
+            raise ValueError(
+                "Slug must be 3–50 characters: lowercase letters, digits, or hyphens; "
+                "no leading or trailing hyphens"
+            )
+        return v
 
 
 class TenantResponse(BaseModel):

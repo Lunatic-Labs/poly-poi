@@ -1,10 +1,12 @@
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "../../../lib/api";
+import { SLUG_RE, deriveSlug, useSlugCheck } from "../../../lib/slug";
 
 const BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
 interface Tenant {
   slug: string;
+  name: string;
   branding: {
     primary_color?: string;
     accent_color?: string;
@@ -65,6 +67,10 @@ export default function SettingsTab() {
   const [primaryColor, setPrimaryColor] = useState("#2563eb");
   const [accentColor, setAccentColor] = useState("#7c3aed");
   const [logoPreview, setLogoPreview] = useState<string | undefined>();
+  const [siteName, setSiteName] = useState("");
+  const [siteSlug, setSiteSlug] = useState("");
+  const [originalSlug, setOriginalSlug] = useState("");
+  const [identityError, setIdentityError] = useState<string | null>(null);
   const logoRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -72,6 +78,9 @@ export default function SettingsTab() {
       .get<Tenant>("/api/admin/tenants/me")
       .then((t) => {
         setTenant(t);
+        setSiteName(t.name);
+        setSiteSlug(t.slug);
+        setOriginalSlug(t.slug);
         setWelcomeText(t.branding.welcome_text ?? "");
         setPrimaryColor(t.branding.primary_color ?? "#2563eb");
         setAccentColor(t.branding.accent_color ?? "#7c3aed");
@@ -80,11 +89,46 @@ export default function SettingsTab() {
       .catch(() => {});
   }, []);
 
+  const { available: slugAvailable, checking: checkingSlug } = useSlugCheck(siteSlug, originalSlug);
+
   async function patchTenant(body: Partial<Tenant>) {
     setSaving(true);
     try {
       const updated = await api.patch<Tenant>("/api/admin/tenants/me", body);
       setTenant(updated);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleSaveIdentity() {
+    if (!tenant) return;
+    setIdentityError(null);
+
+    if (!siteName.trim()) {
+      setIdentityError("Site name is required");
+      return;
+    }
+    if (!SLUG_RE.test(siteSlug)) {
+      setIdentityError("Slug must be 3–50 characters: lowercase letters, digits, or hyphens");
+      return;
+    }
+    if (siteSlug !== originalSlug && slugAvailable === false) {
+      setIdentityError("That URL is already taken — try another");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const body: Partial<Tenant> & { slug?: string } = { name: siteName };
+      if (siteSlug !== originalSlug) body.slug = siteSlug;
+      const updated = await api.patch<Tenant>("/api/admin/tenants/me", body);
+      setTenant(updated);
+      setSiteName(updated.name);
+      setSiteSlug(updated.slug);
+      setOriginalSlug(updated.slug);
+    } catch (err) {
+      setIdentityError(err instanceof Error ? err.message : "Failed to save");
     } finally {
       setSaving(false);
     }
@@ -143,6 +187,59 @@ export default function SettingsTab() {
       <div className="grid grid-cols-3 gap-6">
         {/* Left column */}
         <div className="col-span-2 flex flex-col gap-6">
+          {/* Site Identity */}
+          <div className="rounded-xl border border-gray-200 bg-white p-6">
+            <h2 className="text-base font-semibold text-gray-900">Site Identity</h2>
+            <p className="mt-0.5 text-sm text-gray-500">Your site name and visitor app URL</p>
+            <div className="mt-5 space-y-4">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Site name</label>
+                <input
+                  type="text"
+                  value={siteName}
+                  onChange={(e) => setSiteName(e.target.value)}
+                  maxLength={100}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Site URL</label>
+                <div className="flex items-center rounded-lg border border-gray-300 px-3 py-2 text-sm focus-within:ring-2 focus-within:ring-blue-500">
+                  <span className="shrink-0 text-gray-400">polypoi.com/app/</span>
+                  <input
+                    type="text"
+                    value={siteSlug}
+                    onChange={(e) => setSiteSlug(deriveSlug(e.target.value))}
+                    className="min-w-0 flex-1 border-none bg-transparent focus:outline-none"
+                  />
+                </div>
+                <div className="mt-1 flex items-center gap-2 text-xs">
+                  {siteSlug === originalSlug ? (
+                    <span className="text-gray-400">Current URL</span>
+                  ) : checkingSlug ? (
+                    <span className="text-gray-400">Checking availability…</span>
+                  ) : !SLUG_RE.test(siteSlug) ? (
+                    <span className="text-gray-400">Lowercase letters, digits, and hyphens only</span>
+                  ) : slugAvailable === true ? (
+                    <span className="text-green-600">Available</span>
+                  ) : slugAvailable === false ? (
+                    <span className="text-red-600">Already taken</span>
+                  ) : null}
+                </div>
+              </div>
+              {identityError && <p className="text-sm text-red-600">{identityError}</p>}
+              <div className="flex justify-end">
+                <button
+                  onClick={handleSaveIdentity}
+                  disabled={saving || (siteSlug !== originalSlug && slugAvailable === false)}
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+
           {/* Visitor Modules */}
           <div className="rounded-xl border border-gray-200 bg-white p-6">
             <h2 className="text-base font-semibold text-gray-900">Visitor Modules</h2>

@@ -37,6 +37,13 @@ async def _require_tenant(user_id: str, db: AsyncSession) -> Tenant:
 # ── Public endpoints ───────────────────────────────────────────────────────────
 
 
+@router.get("/tenant/{slug}/check")
+async def check_slug_available(slug: str, db: AsyncSession = Depends(get_db)):
+    """Return whether a slug is available."""
+    result = await db.execute(select(Tenant.id).where(Tenant.slug == slug))
+    return {"available": result.scalar_one_or_none() is None}
+
+
 @router.get("/tenant/{slug}", response_model=TenantResponse)
 async def get_tenant_by_slug(slug: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Tenant).where(Tenant.slug == slug))
@@ -121,7 +128,13 @@ async def update_my_tenant(
     for field, value in body.model_dump(exclude_unset=True).items():
         setattr(tenant, field, value)
 
-    await db.commit()
+    try:
+        await db.commit()
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Slug already taken"
+        )
     await db.refresh(tenant)
     return tenant
 

@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { SLUG_RE, deriveSlug, useSlugCheck } from "../../../lib/slug";
 
 interface BrandingData {
   primary_color: string;
@@ -38,14 +39,10 @@ export default function Step1Identity({ onNext, loading, initialData }: Props) {
   const [error, setError] = useState<string | null>(null);
   const logoRef = useRef<HTMLInputElement>(null);
 
-  function deriveSlug(value: string) {
-    return value
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .slice(0, 50);
-  }
+  // Skip availability check during onboarding re-entry (slug already claimed)
+  const { available: slugAvailable, checking: checkingSlug } = useSlugCheck(
+    initialData ? "" : slug,
+  );
 
   function handleNameChange(value: string) {
     setName(value);
@@ -77,8 +74,12 @@ export default function Step1Identity({ onNext, loading, initialData }: Props) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!/^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$/.test(slug)) {
+    if (!SLUG_RE.test(slug)) {
       setError("Slug must be 3–50 characters: lowercase letters, digits, or hyphens");
+      return;
+    }
+    if (slugAvailable === false) {
+      setError("That URL is already taken — try another");
       return;
     }
     onNext({
@@ -125,9 +126,19 @@ export default function Step1Identity({ onNext, loading, initialData }: Props) {
               className="min-w-0 flex-1 border-none bg-transparent focus:outline-none disabled:cursor-not-allowed disabled:text-gray-400"
             />
           </div>
-          <p className="mt-1 text-xs text-gray-400">
-            {initialData ? "Site URL cannot be changed." : "Lowercase letters, digits, and hyphens only. Cannot be changed later."}
-          </p>
+          <div className="mt-1 flex items-center gap-2 text-xs">
+            {initialData ? (
+              <span className="text-gray-400">Site URL cannot be changed here.</span>
+            ) : checkingSlug ? (
+              <span className="text-gray-400">Checking availability…</span>
+            ) : slugAvailable === true ? (
+              <span className="text-green-600">Available</span>
+            ) : slugAvailable === false ? (
+              <span className="text-red-600">Already taken</span>
+            ) : (
+              <span className="text-gray-400">Lowercase letters, digits, and hyphens only</span>
+            )}
+          </div>
         </div>
       </div>
 
