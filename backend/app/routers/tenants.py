@@ -94,6 +94,7 @@ async def create_tenant(
 
     tenant = Tenant(slug=body.slug, name=body.name, contact_info=body.contact_info)
     db.add(tenant)
+    # flush (not commit) so a slug collision is caught before we create the AdminProfile
     try:
         await db.flush()
     except IntegrityError:

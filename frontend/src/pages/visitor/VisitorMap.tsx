@@ -207,6 +207,8 @@ export default function VisitorMap({
 
   const activeRoute = routes.find((r) => r.id === activeRouteId) ?? null;
 
+  // Resolve route's UUID stop_order to actual stops. The filter drops
+  // orphaned IDs (stops deleted after the route was created — no FK cascade).
   const routeStops = useMemo<VisitorStop[]>(() => {
     if (!activeRoute) return stops;
     const byId = new Map(stops.map((s) => [s.id, s]));

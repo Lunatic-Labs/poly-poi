@@ -143,6 +143,7 @@ async def delete_stop_photo(
     prefix = f"{settings.supabase_url}/storage/v1/object/public/tenant-assets/"
     storage_path = url.removeprefix(prefix)
 
+    # Supabase Storage delete API uses DELETE with a JSON body
     async with httpx.AsyncClient() as client:
         resp = await client.request(
             "DELETE",

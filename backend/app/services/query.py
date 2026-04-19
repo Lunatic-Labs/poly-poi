@@ -182,6 +182,9 @@ async def _classify_and_handle_structured(
     """
     Return a direct string answer for structured intents, or None to fall through to RAG.
     Checks: hours → contact → accessibility → emergency → restroom → food → parking.
+
+    Intentionally stateless — conversation history is ignored. These are DB lookups,
+    not conversational queries, so prior messages would only confuse matching.
     """
     if _HOURS.search(message):
         return _format_hours(tenant)
@@ -216,6 +219,7 @@ async def _embed(text: str) -> list[float]:
 async def _retrieve(message: str, tenant_id: uuid.UUID, db: AsyncSession) -> list[str]:
     """Cosine similarity search against document_chunks, filtered by tenant."""
     vector = await _embed(message)
+    # pgvector's CAST(:embedding AS vector) expects a literal string like "[0.1,0.2,...]"
     vector_str = "[" + ",".join(str(v) for v in vector) + "]"
     result = await db.execute(
         sa_text("""
@@ -309,6 +313,8 @@ async def query(
         yield structured
         return
 
+    # Graceful degradation: if vector search fails (pgvector down, no embeddings yet),
+    # the chat still works — GPT-4o responds without context rather than erroring out.
     try:
         chunks = await _retrieve(message, tenant.id, db)
     except Exception:
@@ -317,6 +323,8 @@ async def query(
 
     messages = _assemble_prompt(tenant, message, chunks, history)
 
+    # Accumulate tokens while streaming so we can inspect the full response
+    # after delivery for unanswered-question detection.
     accumulated: list[str] = []
     async for token in _stream_openai(messages):
         accumulated.append(token)

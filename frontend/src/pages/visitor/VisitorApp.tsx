@@ -105,6 +105,8 @@ function NavTab({
   onSelect: (tab: Tab) => void;
   children: React.ReactNode;
 }) {
+  // Recommendations isn't a nav tab — it's reached from Home's explore cards,
+  // so keep Home highlighted when recommendations is showing.
   const isActive = activeTab === id || (id === "home" && activeTab === "recommendations");
   return (
     <button

@@ -48,6 +48,8 @@ export default function LocationPicker({ lat, lng, onChange }: LocationPickerPro
   const [results, setResults] = useState<NominatimResult[]>([]);
   const [searching, setSearching] = useState(false);
   const markerRef = useRef<L.Marker>(null);
+  // When a result is selected, we set query to the display name — skipSearch
+  // prevents the useEffect from firing a redundant Nominatim search for that text.
   const skipSearch = useRef(false);
 
   useEffect(() => {

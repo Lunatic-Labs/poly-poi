@@ -83,6 +83,8 @@ async def upload_document(
     await db.commit()
     await db.refresh(document)
 
+    # Best-effort: upload succeeds even if Redis/worker is down.
+    # The document stays status="pending" until the worker picks it up.
     try:
         await enqueue_ingest(str(document.id))
     except Exception:

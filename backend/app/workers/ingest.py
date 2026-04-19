@@ -35,6 +35,7 @@ CHUNK_OVERLAP_TOKENS = 50
 EMBED_BATCH_SIZE = 100
 EMBED_MODEL = "text-embedding-3-small"
 
+# cl100k_base is the tokenizer for GPT-4o and text-embedding-3-small
 _tokenizer = tiktoken.get_encoding("cl100k_base")
 _openai = AsyncOpenAI(api_key=settings.openai_api_key)
 
@@ -247,6 +248,7 @@ async def ingest_document(ctx: dict, document_id: str) -> None:
 
 
 async def startup(ctx: dict) -> None:
+    # Worker runs as a separate process — can't share the FastAPI app's DB session
     engine = create_async_engine(settings.database_url, echo=False)
     session_factory = async_sessionmaker(engine, expire_on_commit=False)
     ctx["db_session"] = session_factory()

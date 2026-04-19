@@ -39,7 +39,8 @@ export default function ChatBot({ slug, primaryColor }: Props) {
     const text = input.trim();
     if (!text || streaming) return;
 
-    // Capture recent history before updating state
+    // Capture history BEFORE setMessages — reading after would see stale state
+    // due to React's batched updates.
     const recentHistory = messages
       .slice(-10)
       .map(({ role, content }) => ({ role, content }));

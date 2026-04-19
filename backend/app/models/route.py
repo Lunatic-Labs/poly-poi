@@ -13,6 +13,8 @@ class Route(Base):
     tenant_id = Column(UUID(as_uuid=True), nullable=False)
     name = Column(String, nullable=False)
     description = Column(Text)
+    # UUID array, no FK — routes can reference stops that were later deleted.
+    # Visitor map filters out orphaned IDs defensively when resolving.
     stop_order = Column(ARRAY(UUID(as_uuid=True)), nullable=False, default=list)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now())
