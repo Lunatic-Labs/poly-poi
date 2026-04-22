@@ -21,7 +21,7 @@ const STATUS_LABEL: Record<string, string> = {
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-700",
   processing: "bg-yellow-100 text-yellow-700",
-  ready: "bg-green-100 text-green-700",
+  ready: "bg-brand-jade/20 text-brand-jade",
   failed: "bg-red-100 text-red-700",
 };
 
@@ -109,15 +109,15 @@ export default function DocumentsTab() {
       {/* Header */}
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Documents</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-brand-navy">Documents</h1>
+          <p className="mt-1 text-sm text-brand-jade">
             Your AI guide answers questions from these files
           </p>
         </div>
         <button
           onClick={() => fileRef.current?.click()}
           disabled={uploading}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          className="rounded-lg bg-brand-navy px-4 py-2 text-sm font-medium text-white hover:bg-brand-navy/90 disabled:opacity-50"
         >
           {uploading ? "Uploading…" : "+ Upload document"}
         </button>
@@ -148,12 +148,12 @@ export default function DocumentsTab() {
         onDrop={handleDrop}
         className={`mb-6 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed py-8 transition-colors ${
           dragOver
-            ? "border-blue-400 bg-blue-50"
+            ? "border-brand-navy bg-brand-sky/20"
             : "border-gray-200 bg-white hover:border-gray-300"
         }`}
       >
         <svg
-          className="mb-2 h-8 w-8 text-gray-300"
+          className="mb-2 h-8 w-8 text-brand-navy/30"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -165,7 +165,7 @@ export default function DocumentsTab() {
             d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
           />
         </svg>
-        <p className="text-sm text-gray-400">Drop new files here to upload</p>
+        <p className="text-sm text-brand-navy/60">Drop new files here to upload</p>
       </div>
 
       {/* Table */}
@@ -174,19 +174,19 @@ export default function DocumentsTab() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-brand-navy">
                   File
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-brand-navy">
                   Size
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-brand-navy">
                   Chunks
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-brand-navy">
                   Status
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-brand-navy">
                   Uploaded
                 </th>
                 <th className="px-4 py-3" />
@@ -195,7 +195,7 @@ export default function DocumentsTab() {
             <tbody className="divide-y divide-gray-100">
               {documents.map((doc) => (
                 <tr key={doc.id} className="hover:bg-gray-50">
-                  <td className="px-5 py-3 font-medium text-gray-900">{doc.filename}</td>
+                  <td className="px-5 py-3 font-medium text-brand-navy">{doc.filename}</td>
                   <td className="px-4 py-3 text-gray-500">
                     {fileSizes[doc.id] != null ? formatBytes(fileSizes[doc.id]) : "—"}
                   </td>
@@ -216,7 +216,7 @@ export default function DocumentsTab() {
                   <td className="px-4 py-3 text-right">
                     <button
                       onClick={() => handleDelete(doc)}
-                      className="rounded-md border border-red-200 px-3 py-1 text-xs text-red-500 hover:bg-red-50"
+                      className="rounded-md border border-brand-blush/40 px-3 py-1 text-xs text-brand-blush hover:bg-brand-blush/10"
                     >
                       Delete
                     </button>

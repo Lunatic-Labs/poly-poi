@@ -95,7 +95,7 @@ export default function Step3Stops({ onNext, onBack }: Props) {
               <button
                 type="button"
                 onClick={() => removeStop(i)}
-                className="text-xs text-red-500 hover:underline"
+                className="text-xs text-brand-blush hover:underline"
               >
                 Remove
               </button>
@@ -105,14 +105,14 @@ export default function Step3Stops({ onNext, onBack }: Props) {
             placeholder="Stop name"
             value={stop.name}
             onChange={(e) => updateStop(i, "name", e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
           />
           <textarea
             placeholder="Description (optional)"
             value={stop.description}
             onChange={(e) => updateStop(i, "description", e.target.value)}
             rows={2}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
           />
           <LocationPicker
             lat={stop.lat}
@@ -122,7 +122,7 @@ export default function Step3Stops({ onNext, onBack }: Props) {
           <select
             value={stop.category}
             onChange={(e) => updateStop(i, "category", e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
           >
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>
@@ -139,7 +139,7 @@ export default function Step3Stops({ onNext, onBack }: Props) {
                   prev.map((s, idx) => (idx === i ? { ...s, is_accessible: e.target.checked } : s))
                 )
               }
-              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+              className="h-4 w-4 rounded border-gray-300 text-brand-navy focus:ring-2 focus:ring-brand-navy"
             />
             <span className="text-sm text-gray-700">Handicap accessible</span>
           </label>
@@ -175,7 +175,7 @@ export default function Step3Stops({ onNext, onBack }: Props) {
           <button
             type="submit"
             disabled={saving}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            className="rounded-lg bg-brand-navy px-4 py-2 text-sm font-medium text-white hover:bg-brand-navy/90 disabled:opacity-50"
           >
             {saving ? "Saving…" : "Next: Amenities →"}
           </button>

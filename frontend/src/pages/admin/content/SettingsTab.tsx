@@ -180,8 +180,8 @@ export default function SettingsTab() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="mt-1 text-sm text-gray-500">Configure your visitor experience</p>
+        <h1 className="text-2xl font-bold text-brand-navy">Settings</h1>
+        <p className="mt-1 text-sm text-brand-jade">Configure your visitor experience</p>
       </div>
 
       <div className="grid grid-cols-3 gap-6">
@@ -189,8 +189,8 @@ export default function SettingsTab() {
         <div className="col-span-2 flex flex-col gap-6">
           {/* Site Identity */}
           <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-base font-semibold text-gray-900">Site Identity</h2>
-            <p className="mt-0.5 text-sm text-gray-500">Your site name and visitor app URL</p>
+            <h2 className="text-base font-semibold text-brand-navy">Site Identity</h2>
+            <p className="mt-0.5 text-sm text-brand-jade">Your site name and visitor app URL</p>
             <div className="mt-5 space-y-4">
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">Site name</label>
@@ -199,12 +199,12 @@ export default function SettingsTab() {
                   value={siteName}
                   onChange={(e) => setSiteName(e.target.value)}
                   maxLength={100}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
                 />
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">Site URL</label>
-                <div className="flex items-center rounded-lg border border-gray-300 px-3 py-2 text-sm focus-within:ring-2 focus-within:ring-blue-500">
+                <div className="flex items-center rounded-lg border border-gray-300 px-3 py-2 text-sm focus-within:ring-2 focus-within:ring-brand-navy">
                   <span className="shrink-0 text-gray-400">polypoi.com/app/</span>
                   <input
                     type="text"
@@ -221,7 +221,7 @@ export default function SettingsTab() {
                   ) : !SLUG_RE.test(siteSlug) ? (
                     <span className="text-gray-400">Lowercase letters, digits, and hyphens only</span>
                   ) : slugAvailable === true ? (
-                    <span className="text-green-600">Available</span>
+                    <span className="text-brand-jade">Available</span>
                   ) : slugAvailable === false ? (
                     <span className="text-red-600">Already taken</span>
                   ) : null}
@@ -232,7 +232,7 @@ export default function SettingsTab() {
                 <button
                   onClick={handleSaveIdentity}
                   disabled={saving || (siteSlug !== originalSlug && slugAvailable === false)}
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                  className="rounded-lg bg-brand-navy px-4 py-2 text-sm font-medium text-white hover:bg-brand-navy/90 disabled:opacity-50"
                 >
                   Save
                 </button>
@@ -242,8 +242,8 @@ export default function SettingsTab() {
 
           {/* Visitor Modules */}
           <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-base font-semibold text-gray-900">Visitor Modules</h2>
-            <p className="mt-0.5 text-sm text-gray-500">
+            <h2 className="text-base font-semibold text-brand-navy">Visitor Modules</h2>
+            <p className="mt-0.5 text-sm text-brand-jade">
               Toggle which features appear in your visitor app
             </p>
             <div className="mt-5 flex flex-col gap-5">
@@ -268,8 +268,8 @@ export default function SettingsTab() {
 
           {/* Branding */}
           <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-base font-semibold text-gray-900">Branding</h2>
-            <p className="mt-0.5 text-sm text-gray-500">Logo and colors shown in your visitor app</p>
+            <h2 className="text-base font-semibold text-brand-navy">Branding</h2>
+            <p className="mt-0.5 text-sm text-brand-jade">Logo and colors shown in your visitor app</p>
             <div className="mt-5 grid grid-cols-2 gap-6">
               {/* Logo */}
               <div>
@@ -301,7 +301,7 @@ export default function SettingsTab() {
                       type="text"
                       value={primaryColor}
                       onChange={(e) => setPrimaryColor(e.target.value)}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-navy"
                     />
                   </div>
                 </div>
@@ -318,7 +318,7 @@ export default function SettingsTab() {
                       type="text"
                       value={accentColor}
                       onChange={(e) => setAccentColor(e.target.value)}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-navy"
                     />
                   </div>
                 </div>
@@ -326,7 +326,7 @@ export default function SettingsTab() {
                   <button
                     onClick={handleSaveColors}
                     disabled={saving}
-                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                    className="rounded-lg bg-brand-navy px-4 py-2 text-sm font-medium text-white hover:bg-brand-navy/90 disabled:opacity-50"
                   >
                     Save colors
                   </button>
@@ -337,8 +337,8 @@ export default function SettingsTab() {
 
           {/* Welcome Message */}
           <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-base font-semibold text-gray-900">Welcome Message</h2>
-            <p className="mt-0.5 text-sm text-gray-500">
+            <h2 className="text-base font-semibold text-brand-navy">Welcome Message</h2>
+            <p className="mt-0.5 text-sm text-brand-jade">
               Shown to visitors when they first open your guide
             </p>
             <textarea
@@ -346,7 +346,7 @@ export default function SettingsTab() {
               onChange={(e) => setWelcomeText(e.target.value)}
               rows={4}
               placeholder="Welcome to our guide…"
-              className="mt-4 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-4 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
             />
             <div className="mt-3 flex justify-end">
               <button
@@ -354,7 +354,7 @@ export default function SettingsTab() {
                   patchTenant({ branding: { ...tenant.branding, welcome_text: welcomeText } })
                 }
                 disabled={saving}
-                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                className="rounded-lg bg-brand-navy px-4 py-2 text-sm font-medium text-white hover:bg-brand-navy/90 disabled:opacity-50"
               >
                 Save
               </button>
@@ -363,8 +363,8 @@ export default function SettingsTab() {
 
           {/* Guide Tone */}
           <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-base font-semibold text-gray-900">Guide Tone</h2>
-            <p className="mt-0.5 text-sm text-gray-500">Personality of your AI guide</p>
+            <h2 className="text-base font-semibold text-brand-navy">Guide Tone</h2>
+            <p className="mt-0.5 text-sm text-brand-jade">Personality of your AI guide</p>
             <div className="mt-4 flex flex-col gap-3">
               {TONES.map((tone) => {
                 const active = tenant.branding.tone_preset === tone.key;
@@ -374,16 +374,16 @@ export default function SettingsTab() {
                     onClick={() => handleTone(tone.key)}
                     className={`flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors ${
                       active
-                        ? "border-blue-500 bg-blue-50"
+                        ? "border-brand-navy bg-brand-sky/20"
                         : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                     }`}
                   >
                     <span
                       className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 ${
-                        active ? "border-blue-600" : "border-gray-300"
+                        active ? "border-brand-navy" : "border-gray-300"
                       }`}
                     >
-                      {active && <span className="h-2 w-2 rounded-full bg-blue-600" />}
+                      {active && <span className="h-2 w-2 rounded-full bg-brand-navy" />}
                     </span>
                     <div>
                       <p className="text-sm font-medium text-gray-900">{tone.label}</p>
@@ -399,7 +399,7 @@ export default function SettingsTab() {
         {/* Right column — QR Code */}
         <div className="col-span-1">
           <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-base font-semibold text-gray-900">Visitor App QR Code</h2>
+            <h2 className="text-base font-semibold text-brand-navy">Visitor App QR Code</h2>
             <p className="mt-1 text-xs text-gray-500">
               Print and post at your entrance. Visitors scan to open your guide instantly — no app
               download needed.
@@ -416,7 +416,7 @@ export default function SettingsTab() {
                 href={qrUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                className="flex items-center justify-center rounded-lg bg-brand-navy px-4 py-2 text-sm font-medium text-white hover:bg-brand-navy/90"
               >
                 Download PNG
               </a>
@@ -454,7 +454,7 @@ function Toggle({ enabled, disabled, onChange }: ToggleProps) {
       onClick={onChange}
       disabled={disabled}
       className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
-        enabled ? "bg-blue-600" : "bg-gray-300"
+        enabled ? "bg-brand-jade" : "bg-gray-300"
       } ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
     >
       <span

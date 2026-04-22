@@ -50,12 +50,12 @@ export default function Login() {
 
   if (mode === "verify") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-brand-cream">
         <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-2xl">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-brand-sky/40 text-2xl">
             ✉️
           </div>
-          <h1 className="mb-2 text-xl font-bold text-gray-900">Check your email</h1>
+          <h1 className="mb-2 text-xl font-bold text-brand-navy">Check your email</h1>
           <p className="mb-1 text-sm text-gray-500">
             We sent a confirmation link to
           </p>
@@ -68,7 +68,7 @@ export default function Login() {
             <button
               onClick={handleResend}
               disabled={pending}
-              className="text-blue-600 hover:underline disabled:opacity-50"
+              className="text-brand-navy hover:underline disabled:opacity-50"
             >
               Resend confirmation email
             </button>
@@ -79,10 +79,10 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center bg-brand-cream">
       <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow">
-        <h1 className="mb-1 text-2xl font-bold text-gray-900">Low-Key Landmarks</h1>
-        <p className="mb-6 text-sm text-gray-500">
+        <h1 className="mb-1 text-2xl font-bold text-brand-navy">Low-Key Landmarks</h1>
+        <p className="mb-6 text-sm text-brand-jade">
           {mode === "login" ? "Sign in to your admin portal" : "Create your admin account"}
         </p>
 
@@ -95,7 +95,7 @@ export default function Login() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
             />
           </div>
           <div>
@@ -106,7 +106,7 @@ export default function Login() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
             />
           </div>
 
@@ -115,7 +115,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={pending}
-            className="w-full rounded-lg bg-blue-600 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            className="w-full rounded-lg bg-brand-navy py-2 text-sm font-medium text-white hover:bg-brand-navy/90 disabled:opacity-50"
           >
             {pending ? "Please wait…" : mode === "login" ? "Sign in" : "Create account"}
           </button>
@@ -125,14 +125,14 @@ export default function Login() {
           {mode === "login" ? (
             <>
               New here?{" "}
-              <button onClick={() => setMode("signup")} className="text-blue-600 hover:underline">
+              <button onClick={() => setMode("signup")} className="text-brand-navy hover:underline">
                 Create account
               </button>
             </>
           ) : (
             <>
               Already have an account?{" "}
-              <button onClick={() => setMode("login")} className="text-blue-600 hover:underline">
+              <button onClick={() => setMode("login")} className="text-brand-navy hover:underline">
                 Sign in
               </button>
             </>

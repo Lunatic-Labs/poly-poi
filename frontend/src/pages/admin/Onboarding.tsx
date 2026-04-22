@@ -97,7 +97,7 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-10">
+    <div className="flex min-h-screen items-center justify-center bg-brand-cream px-4 py-10">
       <div className="w-full max-w-2xl rounded-2xl bg-white p-8 shadow">
         {/* Account bar */}
         <div className="mb-6 flex items-center justify-end gap-2 text-xs text-gray-400">
@@ -120,9 +120,9 @@ export default function Onboarding() {
                 onClick={() => { if (i < step) setStep(i); }}
                 className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
                   i <= step
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-brand-navy text-white'
                     : 'bg-gray-200 text-gray-500'
-                } ${i < step ? 'cursor-pointer hover:bg-blue-700' : ''}`}
+                } ${i < step ? 'cursor-pointer hover:bg-brand-navy/90' : ''}`}
               >
                 {i < step ? (
                   <svg
@@ -143,7 +143,7 @@ export default function Onboarding() {
                 )}
               </div>
               <span
-                className={`text-sm ${i === step ? 'font-medium text-gray-900' : 'text-gray-400'}`}
+                className={`text-sm ${i === step ? 'font-medium text-brand-navy' : 'text-gray-400'}`}
               >
                 {label}
               </span>
@@ -154,7 +154,7 @@ export default function Onboarding() {
           ))}
         </div>
 
-        <h2 className="mb-6 text-xl font-bold text-gray-900">
+        <h2 className="mb-6 text-xl font-bold text-brand-navy">
           {STEP_TITLES[step]}
         </h2>
 

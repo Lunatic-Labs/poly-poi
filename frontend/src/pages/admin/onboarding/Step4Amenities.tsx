@@ -93,7 +93,7 @@ export default function Step4Amenities({ onNext, onBack }: Props) {
                 type="checkbox"
                 checked={amenity.checked}
                 onChange={() => toggle(i)}
-                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="h-4 w-4 rounded border-gray-300 text-brand-navy focus:ring-brand-navy"
               />
               <span className="text-sm font-medium text-gray-800">
                 {AMENITY_DEFAULTS[i].label}
@@ -106,7 +106,7 @@ export default function Step4Amenities({ onNext, onBack }: Props) {
                   placeholder="Name"
                   value={amenity.name}
                   onChange={(e) => update(i, "name", e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
                 />
                 <LocationPicker
                   lat={amenity.lat}
@@ -140,7 +140,7 @@ export default function Step4Amenities({ onNext, onBack }: Props) {
           <button
             type="submit"
             disabled={saving}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            className="rounded-lg bg-brand-navy px-4 py-2 text-sm font-medium text-white hover:bg-brand-navy/90 disabled:opacity-50"
           >
             {saving ? "Saving…" : "Finish setup →"}
           </button>

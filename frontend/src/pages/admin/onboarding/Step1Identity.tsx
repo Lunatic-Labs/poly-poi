@@ -108,14 +108,14 @@ export default function Step1Identity({ onNext, loading, initialData }: Props) {
             onChange={(e) => handleNameChange(e.target.value)}
             placeholder="Grand Canyon National Park"
             maxLength={100}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
           />
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700">
             Site URL <span className="text-red-500">*</span>
           </label>
-          <div className={`flex items-center rounded-lg border px-3 py-2 text-sm ${initialData ? "border-gray-200 bg-gray-50" : "border-gray-300 focus-within:ring-2 focus-within:ring-blue-500"}`}>
+          <div className={`flex items-center rounded-lg border px-3 py-2 text-sm ${initialData ? "border-gray-200 bg-gray-50" : "border-gray-300 focus-within:ring-2 focus-within:ring-brand-navy"}`}>
             <span className="shrink-0 text-gray-400">polypoi.com/app/</span>
             <input
               type="text"
@@ -132,7 +132,7 @@ export default function Step1Identity({ onNext, loading, initialData }: Props) {
             ) : checkingSlug ? (
               <span className="text-gray-400">Checking availability…</span>
             ) : slugAvailable === true ? (
-              <span className="text-green-600">Available</span>
+              <span className="text-brand-jade">Available</span>
             ) : slugAvailable === false ? (
               <span className="text-red-600">Already taken</span>
             ) : (
@@ -153,7 +153,7 @@ export default function Step1Identity({ onNext, loading, initialData }: Props) {
             onDragLeave={() => setLogoDragOver(false)}
             onDrop={handleLogoDrop}
             className={`flex h-32 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors ${
-              logoDragOver ? "border-blue-400 bg-blue-50" : "border-gray-300 hover:border-gray-400"
+              logoDragOver ? "border-brand-navy bg-brand-sky/20" : "border-gray-300 hover:border-gray-400"
             }`}
           >
             {logoPreview ? (
@@ -205,7 +205,7 @@ export default function Step1Identity({ onNext, loading, initialData }: Props) {
                 type="text"
                 value={primaryColor}
                 onChange={(e) => setPrimaryColor(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-navy"
               />
             </div>
           </div>
@@ -222,7 +222,7 @@ export default function Step1Identity({ onNext, loading, initialData }: Props) {
                 type="text"
                 value={accentColor}
                 onChange={(e) => setAccentColor(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-navy"
               />
             </div>
           </div>
@@ -234,7 +234,7 @@ export default function Step1Identity({ onNext, loading, initialData }: Props) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-lg bg-blue-600 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+        className="w-full rounded-lg bg-brand-navy py-2 text-sm font-medium text-white hover:bg-brand-navy/90 disabled:opacity-50"
       >
         {loading ? "Setting up…" : "Next: Upload content →"}
       </button>

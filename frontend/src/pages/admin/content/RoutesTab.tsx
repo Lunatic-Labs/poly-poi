@@ -130,9 +130,9 @@ export default function RoutesTab() {
       {/* Header */}
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Routes</h1>
+          <h1 className="text-2xl font-bold text-brand-navy">Routes</h1>
           {routes.length > 0 && (
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-brand-jade">
               {routes.length} route{routes.length !== 1 ? "s" : ""}
             </p>
           )}
@@ -141,7 +141,7 @@ export default function RoutesTab() {
           onClick={openCreate}
           disabled={stops.length === 0}
           title={stops.length === 0 ? "Add tour stops first" : undefined}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-lg bg-brand-navy px-4 py-2 text-sm font-medium text-white hover:bg-brand-navy/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           + Add route
         </button>
@@ -162,8 +162,8 @@ export default function RoutesTab() {
               className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3"
             >
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-gray-900">{route.name}</p>
-                <p className="truncate text-xs text-gray-400">
+                <p className="text-sm font-medium text-brand-navy">{route.name}</p>
+                <p className="truncate text-xs text-brand-jade">
                   {route.stop_order.length} stop{route.stop_order.length !== 1 ? "s" : ""}
                   {route.description ? ` · ${route.description}` : ""}
                 </p>
@@ -171,13 +171,13 @@ export default function RoutesTab() {
               <div className="flex gap-2">
                 <button
                   onClick={() => openEdit(route)}
-                  className="text-xs text-blue-600 hover:underline"
+                  className="text-xs text-brand-navy hover:underline"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(route)}
-                  className="text-xs text-red-500 hover:underline"
+                  className="text-xs text-brand-blush hover:underline"
                 >
                   Delete
                 </button>
@@ -192,7 +192,7 @@ export default function RoutesTab() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
           <div className="flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-white shadow-xl">
             <div className="overflow-y-auto p-6">
-              <h3 className="mb-4 text-base font-bold text-gray-900">
+              <h3 className="mb-4 text-base font-bold text-brand-navy">
                 {editing ? "Edit route" : "Add route"}
               </h3>
               <form onSubmit={handleSave} className="space-y-3">
@@ -201,14 +201,14 @@ export default function RoutesTab() {
                   placeholder="Name *"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
                 />
                 <textarea
                   placeholder="Description"
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   rows={2}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
                 />
 
                 {/* Stop order */}
@@ -234,7 +234,7 @@ export default function RoutesTab() {
                             <span className="w-5 shrink-0 text-xs font-medium text-gray-400">
                               {i + 1}.
                             </span>
-                            <span className="flex-1 truncate text-sm text-gray-900">
+                            <span className="flex-1 truncate text-sm text-brand-navy">
                               {stop?.name ?? <em className="text-gray-400">(deleted stop)</em>}
                             </span>
                             <button
@@ -258,7 +258,7 @@ export default function RoutesTab() {
                             <button
                               type="button"
                               onClick={() => removeStop(i)}
-                              className="text-sm text-gray-400 hover:text-red-500"
+                              className="text-sm text-gray-400 hover:text-brand-blush"
                               aria-label="Remove"
                             >
                               ×
@@ -276,7 +276,7 @@ export default function RoutesTab() {
                         addStop(e.target.value);
                         e.target.value = "";
                       }}
-                      className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
                     >
                       <option value="">Add stop…</option>
                       {unselectedStops.map((s) => (
@@ -300,7 +300,7 @@ export default function RoutesTab() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                    className="rounded-lg bg-brand-navy px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-navy/90 disabled:opacity-50"
                   >
                     {saving ? "Saving…" : "Save"}
                   </button>

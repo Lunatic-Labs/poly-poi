@@ -54,26 +54,26 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-brand-cream">
       {/* Sidebar */}
-      <aside className="flex w-52 shrink-0 flex-col border-r border-gray-200 bg-white">
-        {/* Logo */}
-        <div className="px-5 py-5">
-          <span className="text-base font-bold text-gray-900">Low-Key </span>
-          <span className="text-base font-bold text-blue-600">Landmarks</span>
-        </div>
-
-        {/* Tenant identity */}
-        <div className="border-b border-gray-100 px-5 pb-4">
-          <p className="truncate text-sm font-semibold text-gray-900">{tenant?.name ?? "—"}</p>
+      <aside className="flex w-56 shrink-0 flex-col bg-brand-navy">
+        {/* Logo + URL */}
+        <div className="px-5 pb-3 pt-6">
+          <img
+            src="/admin-site-logo.png"
+            alt="Low-Key Landmarks"
+            className="mx-auto h-20 w-36 object-contain"
+          />
           {tenant && (
-            <p className="truncate text-xs text-gray-400">polypoi.com/app/{tenant.slug}</p>
+            <p className="mt-3 truncate text-center text-[11px] text-white/60">
+              polypoi.com/app/{tenant.slug}
+            </p>
           )}
         </div>
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-3 py-4">
-          <p className="mb-1.5 px-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+          <p className="mb-1.5 px-2 text-xs font-semibold uppercase tracking-wider text-white/50">
             Manage
           </p>
           <NavItem
@@ -107,7 +107,7 @@ export default function Dashboard() {
             onClick={() => setActiveView("amenities")}
           />
 
-          <p className="mb-1.5 mt-5 px-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+          <p className="mb-1.5 mt-5 px-2 text-xs font-semibold uppercase tracking-wider text-white/50">
             Configure
           </p>
           <NavItem
@@ -121,7 +121,7 @@ export default function Dashboard() {
               href={`${BASE}/api/tenant/${tenant.slug}/qr`}
               target="_blank"
               rel="noreferrer"
-              className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+              className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm text-white hover:bg-white/10"
             >
               <IconQr />
               QR Code
@@ -130,10 +130,10 @@ export default function Dashboard() {
         </nav>
 
         {/* Sign out */}
-        <div className="border-t border-gray-100 p-3">
+        <div className="p-3">
           <button
             onClick={handleSignOut}
-            className="w-full rounded-md px-3 py-2 text-left text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+            className="w-full rounded-md px-3 py-2 text-left text-sm text-white hover:bg-white/10"
           >
             Sign out
           </button>
@@ -168,8 +168,8 @@ function NavItem({ icon, label, active, onClick }: NavItemProps) {
       onClick={onClick}
       className={`flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors ${
         active
-          ? "bg-blue-50 font-medium text-blue-700"
-          : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+          ? "bg-brand-sky font-medium text-brand-navy"
+          : "text-white hover:bg-white/10"
       }`}
     >
       {icon}

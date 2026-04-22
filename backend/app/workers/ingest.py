@@ -23,7 +23,7 @@ from arq import create_pool
 from arq.connections import RedisSettings
 from openai import AsyncOpenAI
 from sqlalchemy import select, text as sa_text, update
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.core.config import settings
 from app.models.document import Document
@@ -153,109 +153,114 @@ async def _embed_batches(texts: list[str]) -> list[list[float]]:
 
 async def ingest_document(ctx: dict, document_id: str) -> None:
     """ARQ task: full ingest pipeline for a single document."""
-    db_session: AsyncSession = ctx["db_session"]
-
-    # Load document record
-    result = await db_session.execute(
-        select(Document).where(Document.id == document_id)
-    )
-    document = result.scalar_one_or_none()
-    if document is None:
-        logger.error("ingest_document: document %s not found", document_id)
-        return
-
-    # Mark as processing
-    await db_session.execute(
-        update(Document).where(Document.id == document_id).values(status="processing")
-    )
-    await db_session.commit()
+    session_factory = ctx["session_factory"]
 
     try:
-        # Download from Supabase Storage
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(
-                f"{settings.supabase_url}/storage/v1/object/tenant-assets/{document.storage_path}",
-                headers={
-                    "Authorization": f"Bearer {settings.supabase_service_role_key}"
-                },
+        # Per-job session — a failed job can't poison sessions used by later jobs,
+        # and a dropped Supabase connection doesn't persist across runs.
+        async with session_factory() as db_session:
+            result = await db_session.execute(
+                select(Document).where(Document.id == document_id)
             )
-            resp.raise_for_status()
-            content = resp.content
+            document = result.scalar_one_or_none()
+            if document is None:
+                logger.error("ingest_document: document %s not found", document_id)
+                return
 
-        # Extract text
-        text = _extract_text(content, document.mime_type or "text/plain")
-        if not text.strip():
-            raise ValueError("No text could be extracted from the document")
-
-        total_tokens = _token_count(text)
-
-        # Chunk
-        chunks = _chunk_text(text)
-
-        # Embed
-        vectors = await _embed_batches(chunks)
-
-        # Insert DocumentChunk rows via raw SQL (pgvector requires vector literal)
-        for idx, (chunk_text, vector) in enumerate(zip(chunks, vectors)):
-            chunk_tokens = _token_count(chunk_text)
-            vector_str = "[" + ",".join(str(v) for v in vector) + "]"
             await db_session.execute(
-                sa_text(
-                    """
-                    INSERT INTO document_chunks
-                        (tenant_id, document_id, content, embedding, chunk_index, token_count)
-                    VALUES
-                        (:tenant_id, :document_id, :content, CAST(:embedding AS vector), :chunk_index, :token_count)
-                    """
-                ),
-                {
-                    "tenant_id": str(document.tenant_id),
-                    "document_id": document_id,
-                    "content": chunk_text,
-                    "embedding": vector_str,
-                    "chunk_index": idx,
-                    "token_count": chunk_tokens,
-                },
+                update(Document)
+                .where(Document.id == document_id)
+                .values(status="processing")
             )
+            await db_session.commit()
 
-        await db_session.execute(
-            update(Document)
-            .where(Document.id == document_id)
-            .values(
-                status="ready",
-                token_count=total_tokens,
-                chunk_count=len(chunks),
-                error_message=None,
+            async with httpx.AsyncClient() as client:
+                resp = await client.get(
+                    f"{settings.supabase_url}/storage/v1/object/tenant-assets/{document.storage_path}",
+                    headers={
+                        "Authorization": f"Bearer {settings.supabase_service_role_key}"
+                    },
+                )
+                resp.raise_for_status()
+                content = resp.content
+
+            text = _extract_text(content, document.mime_type or "text/plain")
+            if not text.strip():
+                raise ValueError("No text could be extracted from the document")
+
+            total_tokens = _token_count(text)
+            chunks = _chunk_text(text)
+            vectors = await _embed_batches(chunks)
+
+            # Raw SQL — pgvector requires CAST(:embedding AS vector) with a "[...]" literal
+            for idx, (chunk_text, vector) in enumerate(zip(chunks, vectors)):
+                chunk_tokens = _token_count(chunk_text)
+                vector_str = "[" + ",".join(str(v) for v in vector) + "]"
+                await db_session.execute(
+                    sa_text(
+                        """
+                        INSERT INTO document_chunks
+                            (tenant_id, document_id, content, embedding, chunk_index, token_count)
+                        VALUES
+                            (:tenant_id, :document_id, :content, CAST(:embedding AS vector), :chunk_index, :token_count)
+                        """
+                    ),
+                    {
+                        "tenant_id": str(document.tenant_id),
+                        "document_id": document_id,
+                        "content": chunk_text,
+                        "embedding": vector_str,
+                        "chunk_index": idx,
+                        "token_count": chunk_tokens,
+                    },
+                )
+
+            await db_session.execute(
+                update(Document)
+                .where(Document.id == document_id)
+                .values(
+                    status="ready",
+                    token_count=total_tokens,
+                    chunk_count=len(chunks),
+                    error_message=None,
+                )
             )
-        )
-        await db_session.commit()
-        logger.info(
-            "ingest_document: %s complete — %d chunks", document_id, len(chunks)
-        )
+            await db_session.commit()
+            logger.info(
+                "ingest_document: %s complete — %d chunks", document_id, len(chunks)
+            )
 
     except Exception as exc:
         logger.exception("ingest_document: %s failed", document_id)
-        await db_session.rollback()
-        await db_session.execute(
-            update(Document)
-            .where(Document.id == document_id)
-            .values(status="failed", error_message=str(exc))
-        )
-        await db_session.commit()
+        # Fresh session — the primary session may be in an invalid state.
+        try:
+            async with session_factory() as fail_session:
+                await fail_session.execute(
+                    update(Document)
+                    .where(Document.id == document_id)
+                    .values(status="failed", error_message=str(exc))
+                )
+                await fail_session.commit()
+        except Exception:
+            logger.exception(
+                "ingest_document: %s — could not record failure", document_id
+            )
 
 
 # ── ARQ worker settings ────────────────────────────────────────────────────────
 
 
 async def startup(ctx: dict) -> None:
-    # Worker runs as a separate process — can't share the FastAPI app's DB session
+    # Worker runs as a separate process — can't share the FastAPI app's DB session.
+    # Store the factory, not a session: each job opens its own so one failure
+    # can't poison the shared state for subsequent jobs.
     engine = create_async_engine(settings.database_url, echo=False)
-    session_factory = async_sessionmaker(engine, expire_on_commit=False)
-    ctx["db_session"] = session_factory()
+    ctx["engine"] = engine
+    ctx["session_factory"] = async_sessionmaker(engine, expire_on_commit=False)
 
 
 async def shutdown(ctx: dict) -> None:
-    await ctx["db_session"].close()
+    await ctx["engine"].dispose()
 
 
 class WorkerSettings:

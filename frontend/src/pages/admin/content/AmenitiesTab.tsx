@@ -120,14 +120,14 @@ export default function AmenitiesTab() {
     <div>
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Amenities</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-brand-navy">Amenities</h1>
+          <p className="mt-1 text-sm text-brand-jade">
             {amenities.length} amenit{amenities.length !== 1 ? "ies" : "y"}
           </p>
         </div>
         <button
           onClick={openCreate}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          className="rounded-lg bg-brand-navy px-4 py-2 text-sm font-medium text-white hover:bg-brand-navy/90"
         >
           + Add amenity
         </button>
@@ -147,8 +147,8 @@ export default function AmenitiesTab() {
               className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3"
             >
               <div>
-                <p className="text-sm font-medium text-gray-900">{amenity.name}</p>
-                <p className="text-xs text-gray-400">
+                <p className="text-sm font-medium text-brand-navy">{amenity.name}</p>
+                <p className="text-xs text-brand-jade">
                   {amenity.type}
                   {amenity.notes && ` · ${amenity.notes}`}
                 </p>
@@ -156,13 +156,13 @@ export default function AmenitiesTab() {
               <div className="flex gap-2">
                 <button
                   onClick={() => openEdit(amenity)}
-                  className="text-xs text-blue-600 hover:underline"
+                  className="text-xs text-brand-navy hover:underline"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(amenity)}
-                  className="text-xs text-red-500 hover:underline"
+                  className="text-xs text-brand-blush hover:underline"
                 >
                   Delete
                 </button>
@@ -183,7 +183,7 @@ export default function AmenitiesTab() {
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="mb-4 text-base font-bold text-gray-900">
+            <h3 className="mb-4 text-base font-bold text-brand-navy">
               {editing ? "Edit amenity" : "Add amenity"}
             </h3>
             <form onSubmit={handleSave} className="space-y-3">
@@ -192,12 +192,12 @@ export default function AmenitiesTab() {
                 placeholder="Name *"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
               />
               <select
                 value={form.type}
                 onChange={(e) => setForm({ ...form, type: e.target.value })}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
               >
                 {AMENITY_TYPES.map((t) => (
                   <option key={t} value={t}>
@@ -214,7 +214,7 @@ export default function AmenitiesTab() {
                 placeholder="Notes (optional)"
                 value={form.notes}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
               />
               {error && <p className="text-xs text-red-600">{error}</p>}
               <div className="flex justify-end gap-2 pt-1">
@@ -228,7 +228,7 @@ export default function AmenitiesTab() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                  className="rounded-lg bg-brand-navy px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-navy/90 disabled:opacity-50"
                 >
                   {saving ? "Saving…" : "Save"}
                 </button>
