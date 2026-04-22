@@ -167,14 +167,14 @@ export default function StopsTab() {
       {/* Header */}
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Tour Stops</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-brand-navy">Tour Stops</h1>
+          <p className="mt-1 text-sm text-brand-jade">
             {stops.length} stop{stops.length !== 1 ? "s" : ""}
           </p>
         </div>
         <button
           onClick={openCreate}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          className="rounded-lg bg-brand-navy px-4 py-2 text-sm font-medium text-white hover:bg-brand-navy/90"
         >
           + Add stop
         </button>
@@ -195,13 +195,13 @@ export default function StopsTab() {
               className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3"
             >
               <div>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-brand-navy">
                   {stop.name}
                   {stop.is_accessible && (
-                    <span className="ml-1.5 text-blue-500" title="Accessible">&#x267F;</span>
+                    <span className="ml-1.5 text-brand-navy" title="Accessible">&#x267F;</span>
                   )}
                 </p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-brand-jade">
                   {stop.category}
                   {stop.interest_tags.length > 0 && ` · ${stop.interest_tags.join(", ")}`}
                 </p>
@@ -212,7 +212,7 @@ export default function StopsTab() {
                     setPhotoUploadingFor(stop.id);
                     fileInputRef.current?.click();
                   }}
-                  className="text-xs text-gray-500 hover:underline"
+                  className="text-xs text-brand-jade hover:underline"
                 >
                   {stop.photo_urls.length > 0
                     ? `${stop.photo_urls.length} photo${stop.photo_urls.length > 1 ? "s" : ""}`
@@ -220,13 +220,13 @@ export default function StopsTab() {
                 </button>
                 <button
                   onClick={() => openEdit(stop)}
-                  className="text-xs text-blue-600 hover:underline"
+                  className="text-xs text-brand-navy hover:underline"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(stop)}
-                  className="text-xs text-red-500 hover:underline"
+                  className="text-xs text-brand-blush hover:underline"
                 >
                   Delete
                 </button>
@@ -296,7 +296,7 @@ export default function StopsTab() {
                       <button
                         type="button"
                         onClick={() => handlePhotoDelete(photos[idx])}
-                        className="flex items-center justify-center rounded-lg bg-white/80 p-1.5 text-gray-400 shadow-sm hover:bg-white hover:text-red-500"
+                        className="flex items-center justify-center rounded-lg bg-white/80 p-1.5 text-gray-400 shadow-sm hover:bg-white hover:text-brand-blush"
                         title="Delete photo"
                       >
                         <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -319,7 +319,7 @@ export default function StopsTab() {
 
             {/* Scrollable form content */}
             <div className="overflow-y-auto p-6">
-              <h3 className="mb-4 text-base font-bold text-gray-900">
+              <h3 className="mb-4 text-base font-bold text-brand-navy">
                 {editing ? "Edit stop" : "Add stop"}
               </h3>
               <form onSubmit={handleSave} className="space-y-3">
@@ -328,14 +328,14 @@ export default function StopsTab() {
                   placeholder="Name *"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
                 />
                 <textarea
                   placeholder="Description"
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   rows={2}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
                 />
                 <LocationPicker
                   lat={form.lat}
@@ -345,7 +345,7 @@ export default function StopsTab() {
                 <select
                   value={form.category}
                   onChange={(e) => setForm({ ...form, category: e.target.value })}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c} value={c}>
@@ -358,12 +358,12 @@ export default function StopsTab() {
                     type="checkbox"
                     checked={form.is_accessible}
                     onChange={(e) => setForm({ ...form, is_accessible: e.target.checked })}
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-300 text-brand-navy focus:ring-2 focus:ring-brand-navy"
                   />
                   <span className="text-sm text-gray-700">Handicap accessible</span>
                 </label>
                 {/* Tag pill input */}
-                <div className="flex min-h-[38px] flex-wrap gap-1.5 rounded-lg border border-gray-300 px-2.5 py-2 focus-within:ring-2 focus-within:ring-blue-500">
+                <div className="flex min-h-[38px] flex-wrap gap-1.5 rounded-lg border border-gray-300 px-2.5 py-2 focus-within:ring-2 focus-within:ring-brand-navy">
                   {form.interest_tags.map((tag) => (
                     <span
                       key={tag}
@@ -413,7 +413,7 @@ export default function StopsTab() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                    className="rounded-lg bg-brand-navy px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-navy/90 disabled:opacity-50"
                   >
                     {saving ? "Saving…" : "Save"}
                   </button>

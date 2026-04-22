@@ -48,9 +48,9 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 const STATUS_STYLES: Record<string, string> = {
-  pending: 'bg-yellow-50 text-yellow-700',
-  processing: 'bg-blue-50 text-blue-700',
-  ready: 'bg-green-50 text-green-700',
+  pending: 'bg-yellow-100 text-yellow-700',
+  processing: 'bg-yellow-100 text-yellow-700',
+  ready: 'bg-brand-jade/20 text-brand-jade',
   failed: 'bg-red-50 text-red-700',
 };
 
@@ -146,7 +146,7 @@ export default function Step2Content({ onNext, onBack }: Props) {
           onChange={(e) => setWelcomeText(e.target.value)}
           placeholder="Welcome! I'm your AI guide. Ask me anything about this location."
           rows={3}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-navy"
         />
       </div>
 
@@ -163,11 +163,11 @@ export default function Step2Content({ onNext, onBack }: Props) {
               onClick={() => setTonePreset(t.value)}
               className={`rounded-lg border p-3 text-left text-sm transition-colors ${
                 tonePreset === t.value
-                  ? 'border-blue-500 bg-blue-50'
+                  ? 'border-brand-navy bg-brand-sky/20'
                   : 'border-gray-200 hover:border-gray-300'
               }`}
             >
-              <div className="font-medium text-gray-900">{t.label}</div>
+              <div className="font-medium text-brand-navy">{t.label}</div>
               <div className="text-xs text-gray-500">{t.description}</div>
             </button>
           ))}
@@ -194,7 +194,7 @@ export default function Step2Content({ onNext, onBack }: Props) {
           uploading
             ? 'cursor-default border-gray-200 bg-gray-50 opacity-60'
             : dragOver
-              ? 'cursor-pointer border-blue-400 bg-blue-50'
+              ? 'cursor-pointer border-brand-navy bg-brand-sky/20'
               : 'cursor-pointer border-gray-300 hover:border-gray-400'
         }`}
       >
@@ -241,7 +241,7 @@ export default function Step2Content({ onNext, onBack }: Props) {
               className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3"
             >
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-gray-900">
+                <p className="truncate text-sm font-medium text-brand-navy">
                   {doc.filename}
                 </p>
                 {fileSizes[doc.filename] != null && (
@@ -283,7 +283,7 @@ export default function Step2Content({ onNext, onBack }: Props) {
             type="button"
             onClick={handleContinue}
             disabled={saving}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            className="rounded-lg bg-brand-navy px-4 py-2 text-sm font-medium text-white hover:bg-brand-navy/90 disabled:opacity-50"
           >
             {saving ? 'Saving…' : 'Continue →'}
           </button>

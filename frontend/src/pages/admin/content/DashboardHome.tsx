@@ -41,8 +41,8 @@ export default function DashboardHome({ tenant }: DashboardHomeProps) {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-500">{tenant.name}</p>
+        <h1 className="text-2xl font-bold text-brand-navy">Dashboard</h1>
+        <p className="mt-1 text-sm text-brand-jade">{tenant.name}</p>
       </div>
 
       {/* Stats */}
@@ -53,14 +53,14 @@ export default function DashboardHome({ tenant }: DashboardHomeProps) {
       </div>
 
       {/* Quick actions */}
-      <div className="w-72 rounded-xl border border-gray-200 bg-white p-5">
-        <h2 className="mb-3 text-sm font-semibold text-gray-900">Quick actions</h2>
+      <div className="w-96 rounded-xl border border-gray-200 bg-white p-5">
+        <h2 className="mb-3 text-sm font-semibold text-brand-navy">Quick actions</h2>
         <div className="flex flex-col gap-2">
           <a
             href={`/app/${tenant.slug}`}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center justify-center rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+            className="flex items-center justify-center rounded-lg border border-brand-navy/40 px-4 py-2.5 text-sm text-brand-navy hover:bg-brand-sky/20"
           >
             Preview visitor app
           </a>
@@ -68,7 +68,7 @@ export default function DashboardHome({ tenant }: DashboardHomeProps) {
             href={`${BASE}/api/tenant/${tenant.slug}/qr`}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center justify-center rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+            className="flex items-center justify-center rounded-lg border border-brand-navy/40 px-4 py-2.5 text-sm text-brand-navy hover:bg-brand-sky/20"
           >
             Download QR code
           </a>
@@ -88,14 +88,14 @@ interface StatCardProps {
 function StatCard({ label, value, subtext, placeholder }: StatCardProps) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5">
-      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">{label}</p>
+      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-brand-navy">{label}</p>
       {placeholder || value === null ? (
-        <p className="text-3xl font-bold text-gray-300">—</p>
+        <p className="text-4xl font-bold text-brand-navy/30">—</p>
       ) : (
-        <p className="text-3xl font-bold text-gray-900">{value}</p>
+        <p className="text-4xl font-bold text-brand-navy">{value}</p>
       )}
       {subtext && (
-        <p className={`mt-1 text-xs ${placeholder ? "text-gray-300" : "text-gray-400"}`}>
+        <p className={`mt-1 text-xs ${placeholder ? "text-brand-jade/60" : "text-brand-jade"}`}>
           {subtext}
         </p>
       )}
