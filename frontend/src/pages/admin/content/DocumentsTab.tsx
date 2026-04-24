@@ -152,19 +152,7 @@ export default function DocumentsTab() {
             : "border-gray-200 bg-white hover:border-gray-300"
         }`}
       >
-        <svg
-          className="mb-2 h-8 w-8 text-brand-navy/30"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
-          />
-        </svg>
+        <img src="/doc-icon.svg" alt="" aria-hidden className="mb-2 h-12 w-12" />
         <p className="text-sm text-brand-navy/60">Drop new files here to upload</p>
       </div>
 
