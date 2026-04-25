@@ -57,7 +57,7 @@ Each site is a **tenant** — isolated by `tenant_id` at the database layer, wit
 
 ```sh
 make setup                               # install Python + Node deps
-cp .env.example backend/.env.local      # add Supabase + OpenAI credentials
+cp .env.example .env.local               # add Supabase + OpenAI credentials
 make backend                             # API at http://localhost:8000
 make frontend                            # app at http://localhost:5173
 ```

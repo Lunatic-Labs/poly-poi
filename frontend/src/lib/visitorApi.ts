@@ -31,6 +31,7 @@ export interface VisitorTenantConfig {
     map?: boolean;
     recommendations?: boolean;
     routes?: boolean;
+    voice?: boolean;
   };
   operating_hours: Record<string, { open: string; close: string } | string>;
   contact_info: {
@@ -71,6 +72,13 @@ export interface VisitorRoute {
   stop_order: string[];
 }
 
+export interface VisitorVoiceCharacter {
+  id: string;
+  name: string;
+  description: string | null;
+  is_default: boolean;
+}
+
 // ── API calls ──────────────────────────────────────────────────────────────
 
 export const visitorApi = {
@@ -78,6 +86,8 @@ export const visitorApi = {
   stops: (slug: string) => vGet<VisitorStop[]>(`/api/${slug}/stops`),
   amenities: (slug: string) => vGet<VisitorAmenity[]>(`/api/${slug}/amenities`),
   routes: (slug: string) => vGet<VisitorRoute[]>(`/api/${slug}/routes`),
+  voiceCharacters: (slug: string) =>
+    vGet<VisitorVoiceCharacter[]>(`/api/${slug}/voice-characters`),
 };
 
 export { BASE as VISITOR_BASE };

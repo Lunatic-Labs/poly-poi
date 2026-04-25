@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import VoicePicker from "../../components/VoicePicker";
 import {
   visitorApi,
   type VisitorAmenity,
   type VisitorRoute,
   type VisitorStop,
   type VisitorTenantConfig,
+  type VisitorVoiceCharacter,
 } from "../../lib/visitorApi";
 import AmenityLookup from "./AmenityLookup";
 import ChatBot from "./ChatBot";
@@ -379,6 +381,8 @@ export default function VisitorApp() {
   const [stops, setStops] = useState<VisitorStop[]>([]);
   const [amenities, setAmenities] = useState<VisitorAmenity[]>([]);
   const [routes, setRoutes] = useState<VisitorRoute[]>([]);
+  const [voices, setVoices] = useState<VisitorVoiceCharacter[]>([]);
+  const [selectedVoiceId, setSelectedVoiceId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("home");
   const [error, setError] = useState<string | null>(null);
   const INTRO_KEY = `polypoi_intro_done_${slug}`;
@@ -403,6 +407,29 @@ export default function VisitorApp() {
       })
       .catch(() => setError("Could not load this visitor experience. Please try again."));
   }, [slug]);
+
+  // Fetch voice characters only when voice is enabled.
+  useEffect(() => {
+    if (!slug || !config?.enabled_modules.voice) return;
+    visitorApi
+      .voiceCharacters(slug)
+      .then((vs) => {
+        setVoices(vs);
+        // Restore visitor's last pick, or fall back to the tenant's default.
+        const stored = localStorage.getItem(`polypoi_voice_${slug}`);
+        const restored = stored && vs.some((v) => v.id === stored) ? stored : null;
+        const defaultChar = vs.find((v) => v.is_default) ?? vs[0];
+        setSelectedVoiceId(restored ?? defaultChar?.id ?? null);
+      })
+      .catch(() => {
+        /* leave voices empty — UI will hide the picker */
+      });
+  }, [slug, config?.enabled_modules.voice]);
+
+  function handleSelectVoice(id: string) {
+    setSelectedVoiceId(id);
+    if (slug) localStorage.setItem(`polypoi_voice_${slug}`, id);
+  }
 
   if (error) {
     return (
@@ -489,8 +516,23 @@ export default function VisitorApp() {
           />
         )}
         {activeTab === "guide" && modules.chatbot && (
-          <div className="px-4 py-6">
-            <ChatBot slug={slug!} tenantName={config.name} primaryColor={primaryColor} />
+          <div className="px-4 py-6 flex flex-col gap-3">
+            {modules.voice && voices.length > 0 && (
+              <VoicePicker
+                slug={slug!}
+                primaryColor={primaryColor}
+                voices={voices}
+                selectedId={selectedVoiceId}
+                onSelect={handleSelectVoice}
+              />
+            )}
+            <ChatBot
+              slug={slug!}
+              tenantName={config.name}
+              primaryColor={primaryColor}
+              voiceEnabled={!!modules.voice}
+              voiceCharacterId={selectedVoiceId}
+            />
           </div>
         )}
         {activeTab === "map" && modules.map && (

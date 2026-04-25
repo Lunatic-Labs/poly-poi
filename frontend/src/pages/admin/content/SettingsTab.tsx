@@ -35,6 +35,11 @@ const MODULES: { key: string; label: string; description: string; alwaysOn?: boo
     description: "Personalized stop suggestions based on visitor interests",
   },
   {
+    key: "voice",
+    label: "Voice Mode",
+    description: "Visitors can speak questions and hear AI replies aloud",
+  },
+  {
     key: "amenity_lookup",
     label: "Amenity Lookup",
     description: "Restrooms, food, emergency info — always on",

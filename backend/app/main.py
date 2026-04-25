@@ -14,6 +14,8 @@ from app.routers import (
     stops,
     tenants,
     visitor,
+    voice,
+    voice_characters,
 )
 
 app = FastAPI(
@@ -36,9 +38,11 @@ app.include_router(stops.router)
 app.include_router(amenities.router)
 app.include_router(routes.router)
 app.include_router(documents.router)
-# visitor and chat routers registered last — their /{slug}/... patterns are broad
+app.include_router(voice_characters.router)
+# visitor, chat, and voice routers registered last — their /{slug}/... patterns are broad
 # and must not shadow the more specific /tenant/... and /admin/... routes above
 app.include_router(chat.router)
+app.include_router(voice.router)
 app.include_router(visitor.router)
 
 

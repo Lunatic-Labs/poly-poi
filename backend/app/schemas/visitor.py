@@ -17,6 +17,7 @@ class VisitorEnabledModules(BaseModel):
     map: bool = True
     recommendations: bool = True
     routes: bool = True
+    voice: bool = False
 
 
 class VisitorTenantConfig(BaseModel):
@@ -69,5 +70,16 @@ class VisitorRoute(BaseModel):
     name: str
     description: Optional[str]
     stop_order: list[UUID]
+
+    model_config = {"from_attributes": True}
+
+
+class VisitorVoiceCharacter(BaseModel):
+    """Voice character data safe to expose to visitors — strips hume_voice_id."""
+
+    id: UUID
+    name: str
+    description: Optional[str]
+    is_default: bool
 
     model_config = {"from_attributes": True}
