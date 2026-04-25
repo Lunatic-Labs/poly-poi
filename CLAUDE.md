@@ -43,7 +43,7 @@ infra/            Deployment config (Railway, Docker)
 
 ```sh
 make setup        # creates backend/.venv, installs Python + Node deps
-cp .env.example backend/.env.local  # fill in Supabase + OpenAI credentials
+cp .env.example .env.local  # fill in Supabase + OpenAI credentials (lives at project root)
 ```
 
 Credentials come from Supabase dashboard → Settings → API (use legacy anon/service_role keys).
@@ -51,7 +51,7 @@ Credentials come from Supabase dashboard → Settings → API (use legacy anon/s
 ### Running
 
 ```sh
-make backend      # FastAPI at http://localhost:8000 (from backend/.env.local)
+make backend      # FastAPI at http://localhost:8000 (loads .env.local from project root)
 make frontend     # Vite at http://localhost:5173
 ```
 
@@ -65,7 +65,7 @@ docker run -p 6379:6379 redis:7
 cd backend && .venv/bin/arq app.workers.ingest.WorkerSettings
 ```
 
-`REDIS_URL` defaults to `redis://localhost:6379`. Set it in `backend/.env.local` for non-default configs.
+`REDIS_URL` defaults to `redis://localhost:6379`. Set it in `.env.local` for non-default configs.
 
 ### Verification
 
@@ -105,7 +105,7 @@ make db-push      # applies supabase/migrations/ to linked cloud project
 ## Key conventions
 
 - Every DB query must filter by `tenant_id` — multi-tenancy is enforced at the application layer (FastAPI uses service_role key which bypasses RLS)
-- `.env.local` lives in `backend/` (where uvicorn runs), not at root
+- `.env.local` lives at the **project root** and is shared by backend and frontend. Backend: `backend/app/core/config.py` resolves it via an absolute path (works whether uvicorn launches from root or `backend/`). Frontend: `frontend/vite.config.ts` sets `envDir: ".."` so Vite reads root too. Vite still only exposes `VITE_`-prefixed vars to client code. Matches `make setup` and `docker-compose.yml`.
 - Use `gen_random_uuid()` not `uuid_generate_v4()` in migrations (Postgres 17, no uuid-ossp needed)
 - **File uploads to Supabase Storage must go through the FastAPI backend**, not directly from the frontend. The frontend's anon-key JWT is blocked by storage RLS. The backend uses `service_role_key` via httpx to bypass it. See `POST /api/admin/tenants/me/logo` as the pattern.
 - Use `api.postForm<T>(path, formData)` from `lib/api.ts` for multipart uploads — it attaches auth headers without setting `Content-Type` (browser sets the multipart boundary automatically)

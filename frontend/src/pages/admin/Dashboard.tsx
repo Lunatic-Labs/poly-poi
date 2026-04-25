@@ -8,6 +8,7 @@ import DocumentsTab from "./content/DocumentsTab";
 import RoutesTab from "./content/RoutesTab";
 import SettingsTab from "./content/SettingsTab";
 import StopsTab from "./content/StopsTab";
+import VoicesTab from "./content/VoicesTab";
 
 interface Tenant {
   id: string;
@@ -17,7 +18,14 @@ interface Tenant {
   enabled_modules: Record<string, boolean>;
 }
 
-type ActiveView = "home" | "stops" | "routes" | "documents" | "amenities" | "settings";
+type ActiveView =
+  | "home"
+  | "stops"
+  | "routes"
+  | "documents"
+  | "amenities"
+  | "voices"
+  | "settings";
 
 const BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
@@ -106,6 +114,12 @@ export default function Dashboard() {
             active={activeView === "amenities"}
             onClick={() => setActiveView("amenities")}
           />
+          <NavItem
+            icon={<IconVoices />}
+            label="Voices"
+            active={activeView === "voices"}
+            onClick={() => setActiveView("voices")}
+          />
 
           <p className="mb-1.5 mt-5 px-2 text-xs font-semibold uppercase tracking-wider text-white/50">
             Configure
@@ -148,6 +162,7 @@ export default function Dashboard() {
           {activeView === "routes" && <RoutesTab />}
           {activeView === "documents" && <DocumentsTab />}
           {activeView === "amenities" && <AmenitiesTab />}
+          {activeView === "voices" && <VoicesTab />}
           {activeView === "settings" && <SettingsTab />}
         </div>
       </main>
@@ -244,6 +259,19 @@ function IconAmenities() {
         strokeLinejoin="round"
         strokeWidth={2}
         d="M4 6h16M4 10h16M4 14h16M4 18h16"
+      />
+    </svg>
+  );
+}
+
+function IconVoices() {
+  return (
+    <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M19 11a7 7 0 01-14 0m7 7v4m-4 0h8m-8-15a4 4 0 118 0v6a4 4 0 11-8 0V7z"
       />
     </svg>
   );

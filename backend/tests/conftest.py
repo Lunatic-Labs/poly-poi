@@ -7,6 +7,7 @@ os.environ.setdefault("SUPABASE_SERVICE_ROLE_KEY", "test-service-role-key")
 os.environ.setdefault("SUPABASE_JWT_SECRET", "test-jwt-secret")
 os.environ.setdefault("DATABASE_URL", "postgresql+asyncpg://test:test@localhost:5432/test")
 os.environ.setdefault("OPENAI_API_KEY", "sk-test-key")
+os.environ.setdefault("HUME_API_KEY", "test-hume-key")
 
 import uuid
 from datetime import datetime, timezone

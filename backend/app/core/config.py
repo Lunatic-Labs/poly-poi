@@ -1,8 +1,15 @@
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# .env.local lives at the project root (matches docker-compose env_file and `make setup`).
+# Resolve from this file's location so the lookup works regardless of CWD —
+# `make backend` cds into backend/, but uvicorn could also be launched from root.
+_ENV_FILE = Path(__file__).resolve().parents[3] / ".env.local"
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env.local", extra="ignore")
+    model_config = SettingsConfigDict(env_file=_ENV_FILE, extra="ignore")
 
     # Supabase
     supabase_url: str
@@ -15,6 +22,9 @@ class Settings(BaseSettings):
 
     # OpenAI
     openai_api_key: str
+
+    # Hume.ai (TTS + Voice Design)
+    hume_api_key: str
 
     # App
     app_env: str = "development"
