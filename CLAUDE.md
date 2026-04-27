@@ -9,29 +9,36 @@ Config-driven, multi-tenant AI tour guide platform. Any point of interest spins 
 - **Backend**: Python 3.12 + FastAPI + SQLAlchemy async (asyncpg)
 - **Frontend**: React 18 + Vite + TypeScript + Tailwind CSS + react-leaflet (Leaflet 1.9, pinned to react-leaflet v4 — v5 requires React 19)
 - **Database**: Supabase (Postgres 17 + pgvector + Auth + Storage)
-- **AI**: OpenAI GPT-4o (chat), text-embedding-3-small (vectors)
+- **AI**: OpenAI GPT-4o (chat), text-embedding-3-small (vectors), gpt-4o-mini-transcribe (STT) • Hume.ai Octave (TTS + Voice Design)
 - **Hosting**: Railway (API + ARQ worker + Redis) + Vercel (frontend) + Supabase cloud (DB + Auth + Storage)
 
 ## Structure
 
 ```
 backend/app/
-  core/           config, database session, auth (JWKS), tenant dependency
-  models/         SQLAlchemy ORM: Tenant, AdminProfile, Stop, Route, Document, Amenity
+  core/           config, database session, auth (JWKS), tenant dependency (incl.
+                  resolve_tenant_by_slug — shared by visitor + voice routers)
+  models/         SQLAlchemy ORM: Tenant, AdminProfile, Stop, Route, Document, Amenity, VoiceCharacter
   schemas/        Pydantic request/response models — admin schemas + visitor.py (narrow public payloads)
   routers/        FastAPI routers: health, tenants, stops, routes, amenities, documents,
+                  voice_characters (admin CRUD), voice (visitor STT/TTS proxies),
                   visitor (public slug-based reads), chat (SSE streaming)
-  services/       query.py — RAG query pipeline: intent classifier → structured handler or
-                  vector retrieval → GPT-4o streaming; unanswered question logging
+  services/       query.py (RAG: intent classifier → structured handler or vector
+                  retrieval → GPT-4o streaming; unanswered question logging),
+                  hume.py (Voice Design + TTS streaming via httpx),
+                  transcription.py (OpenAI gpt-4o-mini-transcribe wrapper)
   workers/        ARQ background tasks: ingest.py (doc extract → chunk → embed → pgvector)
 frontend/src/
   lib/            supabase.ts, api.ts (auth'd admin fetch wrapper),
-                  visitorApi.ts (unauthenticated visitor fetch + TS types)
+                  visitorApi.ts (unauthenticated visitor fetch + TS types),
+                  audio.ts (MediaRecorder helper + transcribe/playTTS fetch wrappers)
   contexts/       AuthContext (Supabase session state)
-  components/     ProtectedRoute, LocationPicker (Nominatim search + react-leaflet map)
+  components/     ProtectedRoute, LocationPicker (Nominatim search + react-leaflet map),
+                  VoicePicker (visitor voice character modal)
   pages/admin/    Login, Onboarding (4-step wizard), Dashboard (content tabs + settings)
-    content/      StopsTab, RoutesTab, DocumentsTab, AmenitiesTab, SettingsTab
-  pages/visitor/  VisitorApp (shell + first-visit intro flow), ChatBot, VisitorMap (map + StopCard overlay + stop list + route chips/polyline), Recommendations, AmenityLookup
+    content/      StopsTab, RoutesTab, DocumentsTab, AmenitiesTab, VoicesTab, SettingsTab
+  pages/visitor/  VisitorApp (shell + first-visit intro flow), ChatBot (incl. voice
+                  controls when enabled), VisitorMap, Recommendations, AmenityLookup
 supabase/
   migrations/     SQL migrations — committed to git, applied with: make db-push
 infra/            Deployment config (Railway, Docker)
@@ -73,7 +80,7 @@ cd backend && .venv/bin/arq app.workers.ingest.WorkerSettings
 curl localhost:8000/health    # → {"status":"ok","version":"0.1.0"}
 make lint                     # ruff + eslint
 make typecheck                # tsc --noEmit
-make test-backend             # pytest (22 tests, ~0.1s)
+make test-backend             # pytest (34 tests, ~0.1s)
 make test-frontend            # vitest (4 tests)
 make test                     # both
 ```
@@ -123,9 +130,20 @@ make db-push      # applies supabase/migrations/ to linked cloud project
 - **`enabled_modules.routes`** gates the visitor-side route chip row and polyline overlay in `VisitorMap.tsx` only — `VisitorApp.tsx` passes an empty `routes` array into the map when the flag is false. The admin **Routes** tab in `Dashboard.tsx` is always visible regardless; the flag controls visitor surfacing, not admin management. Routes reference stops via `stop_order: UUID[]` with no FK cascade, so `VisitorMap` filters out orphaned IDs defensively when resolving a route's stops.
 - **`interest_tags` in the admin stop form** is `string[]` throughout — form state (`StopFormData.interest_tags: string[]`), the PATCH payload, and the API response all use arrays. The tag widget has a separate `tagInput: string` state for the in-progress input value. No join/split anywhere.
 - **`VisitorMap` stop detail card** renders as `fixed z-[1000]` to appear above Leaflet (which occupies z-index ~400). Any new map overlays must use `z-[1000]` or higher to clear Leaflet's layer stack.
+- **`DATABASE_URL` must use Supabase's transaction pooler** (`aws-0-<region>.pooler.supabase.com:6543`), not the deprecated direct host (`db.<ref>.supabase.co:5432` no longer resolves on IPv4). `core/database.py` is configured for this with `poolclass=NullPool` (Supabase pools on its end — double-pooling wastes pooler slots) and `connect_args={"statement_cache_size": 0}` (transaction pooler doesn't preserve prepared statements across queries; without this asyncpg errors mid-request). Don't change either without also reverting to direct or session pooler URL — the three settings are coupled.
+- **Voice feature** (`routers/voice.py` + `routers/voice_characters.py` + `services/hume.py` + `services/transcription.py`):
+  - **All Hume + STT calls proxy through the backend.** Browser never sees the Hume key. STT uses OpenAI's `gpt-4o-mini-transcribe`; TTS uses Hume Octave streaming.
+  - **`enabled_modules.voice` is gated on BOTH frontend and backend.** UI-only gating would leak paid traffic — the visitor endpoints are public (slug-based), so anyone with a slug could otherwise generate billable Hume/OpenAI calls. `routers/voice.py:require_voice_enabled(tenant)` raises 403 when the flag is off; called from `GET /{slug}/voice-characters`, `POST /{slug}/voice/transcribe`, and `POST /{slug}/voice/tts`.
+  - **Voice character authoring is two-step**: `POST /api/admin/voice-characters/design-preview` returns `{ generation_id, audio_base64, format }`; admin previews via `<audio src="data:audio/mp3;base64,...">`; on accept, frontend sends the held `generation_id` to `POST /api/admin/voice-characters` which calls Hume's save voice endpoint with a freshly-generated UUID as the voice name.
+  - **`VoiceCharacter.hume_voice_id` stores Hume's voice *name* (a UUID we mint at save time), not Hume's internal id** — Hume references saved voices by name in TTS calls (`voice: { name, provider: "CUSTOM_VOICE" }`). Decoupling Hume name from admin display name means renames don't require Hume API calls.
+  - **Voice character ownership is enforced at query level**: `POST /{slug}/voice/tts` filters `WHERE voice_character_id = X AND tenant_id = resolved.id` — visitors for tenant A cannot use tenant B's voices (returns 404).
+  - **Router registration order** (`main.py`): `voice_characters` with admin routes; `voice` and `visitor` last (broad `/{slug}/...` patterns) — voice before visitor doesn't matter route-wise but visitor must remain last.
+  - **One default voice per tenant** enforced by the unique partial index `idx_voice_characters_one_default_per_tenant` (`is_default = TRUE`). Set/update flows clear sibling defaults in the same transaction before flipping a new default on.
+- **`resolve_tenant_by_slug(slug, db)`** lives in `core/tenant.py` and is shared by `routers/visitor.py` and `routers/voice.py`. Don't duplicate the slug→Tenant lookup in new public routers.
 
 ## Additional Context
 
 - `polypoi-design.md` — full architecture design doc; read before making structural changes
 - `shared_notes/product_overview.md` — product summary; read for feature context
 - `/Users/hunterphillips/.claude/plans/silly-conjuring-bee.md` — phased implementation plan (Phases 1–6)
+- `/Users/hunterphillips/.claude/plans/splendid-shimmying-snowglobe.md` — voice feature plan (Hume TTS + OpenAI STT)
