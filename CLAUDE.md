@@ -41,7 +41,7 @@ frontend/src/
                   controls when enabled), VisitorMap, Recommendations, AmenityLookup
 supabase/
   migrations/     SQL migrations — committed to git, applied with: make db-push
-infra/            Deployment config (Railway, Docker)
+infra/            Ops runbook (RUNBOOK.md) + wake.sh (Railway dormancy recovery)
 ```
 
 ## Development
@@ -145,5 +145,6 @@ make db-push      # applies supabase/migrations/ to linked cloud project
 
 - `polypoi-design.md` — full architecture design doc; read before making structural changes
 - `shared_notes/product_overview.md` — product summary; read for feature context
+- `infra/RUNBOOK.md` — ops runbook. Notably: a dormant Railway project wipes service deployments, surfacing as **browser CORS errors that are actually the API being absent** (not a CORS misconfig). Recover with `infra/wake.sh` (Redis → worker → api); `infra/wake.sh --check` reports health read-only.
 - `/Users/hunterphillips/.claude/plans/silly-conjuring-bee.md` — phased implementation plan (Phases 1–6)
 - `/Users/hunterphillips/.claude/plans/splendid-shimmying-snowglobe.md` — voice feature plan (Hume TTS + OpenAI STT)
