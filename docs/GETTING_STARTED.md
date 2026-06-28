@@ -1,4 +1,6 @@
-# Getting Started with Low-Key Landmarks
+# Getting Started with Low-Key Landmarks (Mac)
+
+> On Windows? See [GETTING_STARTED_WINDOWS.md](GETTING_STARTED_WINDOWS.md).
 
 This gets the Low-Key Landmarks app running on your Mac and lets you make changes to it, without writing any code.
 
