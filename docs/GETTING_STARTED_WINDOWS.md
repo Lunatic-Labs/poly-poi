@@ -50,9 +50,7 @@ Codex will lay out a plan. Read it, then approve. Partway through it will probab
 
 ## Step 3: Add the secret file
 
-Save the **`.env.local`** file sent to you (it lands in your Downloads). Then ask Codex:
-
-> Put the `.env.local` file from my Downloads into the top level of the `poly-poi` project folder.
+Save the **`.env.local`** file sent to you and add it to the top level of the `poly-poi` project folder.
 
 > ⚠️ **Keep this file private.** Never share it, never put it on GitHub. The project is already set up to ignore it, so it won't be sent by accident, but don't copy its contents into a chat or a message.
 
@@ -62,11 +60,7 @@ Save the **`.env.local`** file sent to you (it lands in your Downloads). Then as
 
 Open the `poly-poi` folder, go into the `windows-scripts` folder, and double-click **`start.cmd`**. Two windows open and stay running: one for the backend, one for the frontend.
 
-Then open your web browser and go to **http://localhost:5173**. That's the app. The admin login is there too.
-
-Quick health check: **http://localhost:8000/health** should show `{"status":"ok","version":"0.1.0"}`.
-
-Leave those two windows open while you work. To stop the app, close them.
+Then open your web browser and go to **http://localhost:5173**.
 
 ---
 
@@ -125,13 +119,13 @@ Codex writes a small file called a **migration** (a record of the change to the 
 
 ## Cheat sheet
 
-| You want to...       | Do this                                                       |
-| -------------------- | ------------------------------------------------------------- |
-| Start the app        | Double-click `windows-scripts\start.cmd`                      |
-| See the app          | Open **http://localhost:5173** in your browser                |
-| Make a change        | Describe it to Codex                                          |
-| Save and share it    | Ask Codex to open a pull request                              |
-| Fix something broken | Paste the error to Codex                                      |
+| You want to...       | Do this                                        |
+| -------------------- | ---------------------------------------------- |
+| Start the app        | Double-click `windows-scripts\start.cmd`       |
+| See the app          | Open **http://localhost:5173** in your browser |
+| Make a change        | Describe it to Codex                           |
+| Save and share it    | Ask Codex to open a pull request               |
+| Fix something broken | Paste the error to Codex                       |
 
 ---
 
@@ -151,4 +145,4 @@ You still use Codex for making changes in Step 5 onward.
 
 ## If the scripts don't work
 
-These scripts are new and may need a fix on a real PC. If `setup-windows.cmd` or `start.cmd` fails, copy the error message and paste it to Codex, which can usually sort it out. If it can't, raise it with the team.
+These scripts are new and may need a fix on a real PC. If `setup-windows.cmd` or `start.cmd` fails, copy the error message and paste it to Codex.
