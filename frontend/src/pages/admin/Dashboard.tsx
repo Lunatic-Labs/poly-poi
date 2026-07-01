@@ -8,6 +8,7 @@ import DocumentsTab from "./content/DocumentsTab";
 import RoutesTab from "./content/RoutesTab";
 import SettingsTab from "./content/SettingsTab";
 import StopsTab from "./content/StopsTab";
+import TeamTab from "./content/TeamTab";
 import VoicesTab from "./content/VoicesTab";
 
 interface Tenant {
@@ -25,6 +26,7 @@ type ActiveView =
   | "documents"
   | "amenities"
   | "voices"
+  | "team"
   | "settings";
 
 const BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
@@ -125,6 +127,12 @@ export default function Dashboard() {
             Configure
           </p>
           <NavItem
+            icon={<IconTeam />}
+            label="Team"
+            active={activeView === "team"}
+            onClick={() => setActiveView("team")}
+          />
+          <NavItem
             icon={<IconSettings />}
             label="Settings"
             active={activeView === "settings"}
@@ -163,6 +171,7 @@ export default function Dashboard() {
           {activeView === "documents" && <DocumentsTab />}
           {activeView === "amenities" && <AmenitiesTab />}
           {activeView === "voices" && <VoicesTab />}
+          {activeView === "team" && <TeamTab />}
           {activeView === "settings" && <SettingsTab />}
         </div>
       </main>
@@ -272,6 +281,19 @@ function IconVoices() {
         strokeLinejoin="round"
         strokeWidth={2}
         d="M19 11a7 7 0 01-14 0m7 7v4m-4 0h8m-8-15a4 4 0 118 0v6a4 4 0 11-8 0V7z"
+      />
+    </svg>
+  );
+}
+
+function IconTeam() {
+  return (
+    <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 10-4-4 4 4 0 004 4zm6 0a4 4 0 10-3-6.65"
       />
     </svg>
   );

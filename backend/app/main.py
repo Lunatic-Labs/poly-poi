@@ -12,6 +12,7 @@ from app.routers import (
     health,
     routes,
     stops,
+    team,
     tenants,
     visitor,
     voice,
@@ -34,6 +35,7 @@ app.add_middleware(
 
 app.include_router(health.router)
 app.include_router(tenants.router)
+app.include_router(team.router)
 app.include_router(stops.router)
 app.include_router(amenities.router)
 app.include_router(routes.router)

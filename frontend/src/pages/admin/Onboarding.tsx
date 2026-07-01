@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../lib/api';
 import Step1Identity from './onboarding/Step1Identity';
@@ -39,6 +39,14 @@ export default function Onboarding() {
     await signOut();
     navigate('/admin/login');
   }
+
+  // A user who followed an invite link before signing in stashed the code, then
+  // got routed here after auth. Send them back to finish joining.
+  useEffect(() => {
+    if (localStorage.getItem('polypoi_pending_invite')) {
+      navigate('/admin/join');
+    }
+  }, [navigate]);
 
   // Resume onboarding if tenant already exists (e.g. after a page refresh)
   useEffect(() => {
@@ -179,6 +187,15 @@ export default function Onboarding() {
         )}
         {step === 3 && (
           <Step4Amenities onNext={() => navigate('/admin/dashboard')} onBack={() => setStep(2)} />
+        )}
+
+        {step === 0 && (
+          <p className="mt-6 border-t border-gray-100 pt-5 text-center text-sm text-gray-500">
+            Joining a colleague's site?{' '}
+            <Link to="/admin/join" className="text-brand-navy hover:underline">
+              Enter an invite code
+            </Link>
+          </p>
         )}
       </div>
     </div>
