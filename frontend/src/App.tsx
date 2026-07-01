@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 import Dashboard from "./pages/admin/Dashboard";
+import JoinTeam from "./pages/admin/JoinTeam";
 import Login from "./pages/admin/Login";
 import Onboarding from "./pages/admin/Onboarding";
 import VisitorApp from "./pages/visitor/VisitorApp";
@@ -23,6 +24,7 @@ export default function App() {
 
         {/* Admin portal */}
         <Route path="/admin/login" element={<Login />} />
+        <Route path="/admin/join" element={<JoinTeam />} />
         <Route
           path="/admin/onboarding"
           element={

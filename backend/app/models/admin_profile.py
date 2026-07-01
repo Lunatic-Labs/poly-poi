@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, func
+from sqlalchemy import Column, DateTime, ForeignKey, String, func
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.models.base import Base
@@ -13,4 +13,7 @@ class AdminProfile(Base):
         ForeignKey("tenants.id", ondelete="CASCADE"),
         nullable=False,
     )
+    # 'owner' (created the tenant) or 'member' (joined via invite). DB backfills
+    # existing rows to 'owner'; new create_tenant rows rely on the same default.
+    role = Column(String, nullable=False, server_default="owner")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
